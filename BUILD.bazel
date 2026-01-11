@@ -1,0 +1,12 @@
+# Main BUILD file for rules_moonbit
+
+exports_files([
+    "README.md",
+    "CONTRIBUTING.md",
+    "LICENSE",
+])
+
+# Export moonbit directory
+package(
+    default_visibility = ["//visibility:public"],
+)

@@ -1,0 +1,19 @@
+# Hermetic toolchain tests
+
+sh_test(
+    name = "toolchain_checksum_test",
+    srcs = [":toolchain_checksum_test.sh"],
+    data = [
+        "//moonbit/checksums:registry.bzl",
+        "//moonbit/checksums:moonbit.json",
+    ],
+)
+
+sh_test(
+    name = "toolchain_vendor_test",
+    srcs = [":toolchain_vendor_test.sh"],
+    data = [
+        "//moonbit/tools:vendor_toolchains.bzl",
+        "//moonbit/checksums:registry.bzl",
+    ],
+)

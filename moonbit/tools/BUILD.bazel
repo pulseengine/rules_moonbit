@@ -1,0 +1,8 @@
+# MoonBit tools
+
+package(default_visibility = ["//visibility:public"])
+
+# Export toolchain vendor system
+exports_files([
+    "vendor_toolchains.bzl",
+])

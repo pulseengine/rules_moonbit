@@ -1,0 +1,23 @@
+# Example BUILD file for MoonBit
+
+load("@rules_moonbit//moonbit:defs.bzl", "moonbit_library", "moonbit_binary", "moonbit_test")
+
+# Example library
+moonbit_library(
+    name = "example_lib",
+    srcs = ["example_lib.mbt"],
+)
+
+# Example binary that depends on the library
+moonbit_binary(
+    name = "example_app",
+    srcs = ["main.mbt"],
+    deps = [":example_lib"],
+)
+
+# Example test
+moonbit_test(
+    name = "example_test",
+    srcs = ["example_test.mbt"],
+    deps = [":example_lib"],
+)

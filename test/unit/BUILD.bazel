@@ -1,0 +1,9 @@
+# Unit tests for rules_moonbit
+
+load("@bazel_skylib//lib:unittest.bzl", "unit_test")
+load(":moonbit_library_test.bzl", "moonbit_library_test")
+
+unit_test(
+    name = "moonbit_library_unit_test",
+    test = moonbit_library_test,
+)

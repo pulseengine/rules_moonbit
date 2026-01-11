@@ -1,0 +1,8 @@
+# Test defs.bzl
+
+load("//moonbit:defs.bzl", "moonbit_library")
+
+moonbit_library(
+    name = "defs_test_lib",
+    srcs = ["test.mbt"],
+)

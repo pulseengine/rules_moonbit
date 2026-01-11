@@ -1,0 +1,16 @@
+# Modern MoonBit example using updated rules
+
+load("@rules_moonbit//moonbit:defs.bzl", "moonbit_library", "moonbit_binary")
+
+# Simple library
+moonbit_library(
+    name = "modern_lib",
+    srcs = ["modern.mbt"],
+)
+
+# Binary that depends on the library
+moonbit_binary(
+    name = "modern_app",
+    srcs = ["main.mbt"],
+    deps = [":modern_lib"],
+)

@@ -1,0 +1,8 @@
+# Tests
+
+load(":direct_test.bzl", "test_direct")
+
+unit_test(
+    name = "direct_test",
+    test = test_direct,
+)

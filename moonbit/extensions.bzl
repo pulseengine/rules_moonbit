@@ -1,0 +1,28 @@
+"""MoonBit Bzlmod extensions"""
+
+# Copyright 2026 The Rules_Moonbit Authors. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+load("//moonbit/private:toolchain.bzl", "moonbit_hermetic_toolchain_setup")
+
+"""MoonBit Bzlmod extension for hermetic toolchain setup.
+
+This extension provides a way to set up hermetic MoonBit toolchains
+using Bzlmod's use_extension mechanism.
+"""
+
+moonbit_hermetic_toolchain = use_extension(
+    "//moonbit:extensions.bzl",
+    "moonbit_hermetic_toolchain_setup"
+)

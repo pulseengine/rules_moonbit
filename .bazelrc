@@ -1,0 +1,12 @@
+# Bazel configuration for rules_moonbit
+
+# Common build options
+build --enable_bzlmod
+build --incompatible_enable_cc_toolchain_resolution
+
+# Test configuration
+test --test_output=streamed
+
+# Debug options
+# build --verbose_failures
+# build --subcommands

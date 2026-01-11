@@ -1,0 +1,13 @@
+"""Example MODULE.bazel showing hermetic MoonBit toolchain setup"""
+
+module(name = "hermetic_example", version = "0.1.0")
+
+# Use rules_moonbit with hermetic toolchain
+bazel_dep(name = "rules_moonbit", version = "0.1.0")
+
+# Set up hermetic MoonBit toolchain
+moonbit_setup = use_extension("@rules_moonbit//moonbit:extensions.bzl", "moonbit_hermetic_toolchain_setup")
+use_repo(moonbit_setup, "moonbit_toolchains")
+
+# Register the toolchain
+register_toolchains("@moonbit_toolchains//:all")

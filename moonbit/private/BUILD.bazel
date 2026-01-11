@@ -1,0 +1,8 @@
+# BUILD file for private implementation
+
+package(default_visibility = ["//visibility:private"])
+
+exports_files([
+    "moon.bzl",
+    "toolchain.bzl",
+])

@@ -1,0 +1,23 @@
+# Git ignore for rules_moonbit
+
+# Bazel build artifacts
+bazel-*
+bazel-bin/
+bazel-genfiles/
+bazel-out/
+bazel-rules_moonbit/
+bazel-testlogs/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Temporary files
+*~
+*.tmp
+*.bak
+
+# Logs
+*.log

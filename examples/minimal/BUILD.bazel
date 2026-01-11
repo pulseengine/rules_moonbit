@@ -1,0 +1,8 @@
+# Minimal example
+
+load("@rules_moonbit//moonbit:minimal.bzl", "minimal_moonbit_library")
+
+minimal_moonbit_library(
+    name = "minimal_lib",
+    srcs = ["minimal.mbt"],
+)

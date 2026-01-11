@@ -1,0 +1,13 @@
+# MoonBit checksums
+
+package(default_visibility = ["//visibility:public"])
+
+# Export checksum JSON files
+exports_files([
+    "moonbit.json",
+])
+
+# Export registry API
+exports_files([
+    "registry.bzl",
+])
