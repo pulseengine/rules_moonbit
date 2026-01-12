@@ -1,8 +1,23 @@
-# Tests
+# Simple test to verify rules_moonbit works
 
-load(":direct_test.bzl", "test_direct")
+# Test that we can load and use the rules
+load("//moonbit:defs.bzl", "moonbit_library")
 
-unit_test(
-    name = "direct_test",
-    test = test_direct,
+# Create a test library to verify the rule works
+moonbit_library(
+    name = "test_library",
+    srcs = ["test.mbt"],
 )
+
+# Test that providers work
+load("//moonbit:providers.bzl", "MoonbitInfo")
+
+# Test that we can create a simple target that depends on the library
+moonbit_library(
+    name = "test_library_dependent",
+    srcs = ["test2.mbt"],
+    deps = [":test_library"],
+)
+
+
+

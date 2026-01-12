@@ -1,16 +1,16 @@
 """Minimal working MoonBit rule."""
 
-# Minimal provider
-MoonbitInfo = provider(
-    doc = "Minimal MoonBit info",
-    fields = {
-        "name": "package name",
-    }
-)
+load("//moonbit:providers.bzl", "MoonbitInfo")
 
 # Minimal rule
 def _minimal_moonbit_library_impl(ctx):
-    return [MoonbitInfo(name = ctx.label.name)]
+    return [MoonbitInfo(
+        compiled_objects = [],
+        transitive_deps = [],
+        package_name = ctx.label.name,
+        is_main = False,
+        metadata = {},
+    )]
 
 minimal_moonbit_library = rule(
     implementation = _minimal_moonbit_library_impl,

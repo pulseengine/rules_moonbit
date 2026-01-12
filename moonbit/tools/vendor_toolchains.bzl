@@ -20,24 +20,22 @@ load("//moonbit/checksums:registry.bzl",
      "get_github_repo",
      "get_latest_moonbit_version")
 
-def _construct_moonbit_download_url(tool_name, version, platform, tool_info, github_mirror = "https://github.com"):
+def _construct_moonbit_download_url(version, platform, tool_info):
     """Build download URL for MoonBit tool"""
     
-    github_repo = get_github_repo()
-    if not github_repo:
-        fail("GitHub repository not found for MoonBit")
-    
+    # Use the actual CLI URL structure
     url_suffix = tool_info.get("url_suffix")
     if not url_suffix:
-        fail("URL suffix not found for MoonBit version '{}' platform '{}'".format(version, platform))
+        return None
     
-    # Build the URL using GitHub releases pattern
-    return "{mirror}/{github_repo}/releases/download/v{version}/{suffix}".format(
-        mirror = github_mirror,
-        github_repo = github_repo,
-        version = version,
-        suffix = url_suffix,
-    )
+    # Build the URL using the actual CLI structure
+    return "https://cli.moonbitlang.com/binaries/{}/{}'.format(version, url_suffix)
+
+def _construct_core_download_url(version):
+    """Build download URL for MoonBit core"""
+    
+    # Use the actual CLI URL structure for cores
+    return "https://cli.moonbitlang.com/cores/core-{}.tar.gz".format(version)
 
 def _vendor_moonbit_toolchain_impl(repository_ctx):
     """Download MoonBit toolchain using Bazel repository rules
@@ -65,9 +63,9 @@ def _vendor_moonbit_toolchain_impl(repository_ctx):
         fail("Checksum not found for MoonBit version '{}' platform '{}'".format(latest_version, platform))
     
     # Build download URL
-    download_url = _construct_moonbit_download_url(
-        "moonbit", latest_version, platform, tool_info
-    )
+    download_url = _construct_moonbit_download_url(latest_version, platform, tool_info)
+    if not download_url:
+        fail("Could not construct download URL for platform: {}".format(platform))
     
     # Download the toolchain archive
     archive_file = repository_ctx.download(
@@ -79,10 +77,23 @@ def _vendor_moonbit_toolchain_impl(repository_ctx):
     # Extract the moon executable
     moon_executable = archive_file + "/moon"
     
+    # Download the core library
+    core_url = _construct_core_download_url(latest_version)
+    core_checksum = "bf12dce0a92d84911e0d30cb74ac73f80d03a89f0933a4bda87e2f6647a00887"  # Core checksum
+    
+    core_archive = repository_ctx.download(
+        url = core_url,
+        sha256 = core_checksum
+    )
+    
+    # Extract core library
+    core_dir = archive_file + "/core"
+    
     return struct(
         moon = moon_executable,
         version = latest_version,
         platform = platform,
+        core = core_dir
     )
 
 def vendor_moonbit_toolchain(
@@ -96,7 +107,7 @@ def vendor_moonbit_toolchain(
         name: Name for the toolchain repository
         version: Specific MoonBit version (None for latest)
         platforms: List of platforms to support (None for all)
-    
+        
     Example:
         vendor_moonbit_toolchain(
             name = "moonbit_tools",

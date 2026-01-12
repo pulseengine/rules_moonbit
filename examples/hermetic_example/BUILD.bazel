@@ -1,0 +1,16 @@
+# Hermetic toolchain example
+
+load("@rules_moonbit//moonbit:defs.bzl", "moonbit_library", "moonbit_binary")
+
+# Library using hermetic toolchain
+moonbit_library(
+    name = "hermetic_lib",
+    srcs = ["lib.mbt"],
+)
+
+# Binary using hermetic toolchain
+moonbit_binary(
+    name = "hermetic_app",
+    srcs = ["main.mbt"],
+    deps = [":hermetic_lib"],
+)

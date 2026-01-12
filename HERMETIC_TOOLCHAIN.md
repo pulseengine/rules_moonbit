@@ -1,14 +1,58 @@
-# Hermetic MoonBit Toolchain Management
+# Hermetic MoonBit Toolchain Setup
 
-This document explains the hermetic toolchain approach implemented in rules_moonbit, inspired by rules_wasm_component.
+This guide explains how to set up and use the hermetic MoonBit toolchain with rules_moonbit.
 
-## Overview
+## 🎯 Overview
 
-The hermetic toolchain approach ensures that:
-1. **Reproducible builds**: All developers and CI systems use the exact same toolchain version
-2. **No external dependencies**: Tools are downloaded and managed by Bazel, not installed separately
-3. **Checksum verification**: All downloads are verified against known checksums
-4. **Platform support**: Automatic handling of different platforms (Linux, macOS, Windows)
+The hermetic toolchain provides:
+- **Reproducible builds** - Same inputs always produce same outputs
+- **Checksum verification** - All downloads are verified with SHA256 checksums
+- **No system dependencies** - MoonBit compiler is downloaded automatically
+- **Cross-platform support** - Works on macOS, Linux, and Windows
+
+## 🚀 Quick Start
+
+### 1. Add the hermetic toolchain to your `MODULE.bazel`
+
+```bazel
+# MODULE.bazel
+module(name = "your_project")
+
+bazel_dep(name = "rules_moonbit", version = "0.1.0")
+
+# Register hermetic MoonBit toolchain
+moonbit_register_hermetic_toolchain(
+    name = "moonbit_tools",
+    version = "0.6.33",  # or "latest"
+    platforms = ["darwin_arm64", "linux_amd64"],  # platforms you need
+)
+```
+
+### 2. Use MoonBit rules in your `BUILD.bazel`
+
+```bazel
+# BUILD.bazel
+load("@rules_moonbit//moonbit:defs.bzl", "moonbit_library", "moonbit_binary")
+
+moonbit_library(
+    name = "my_lib",
+    srcs = ["lib.mbt"],
+)
+
+moonbit_binary(
+    name = "my_app",
+    srcs = ["main.mbt"],
+    deps = [":my_lib"],
+)
+```
+
+### 3. Build your project
+
+```bash
+bazel build //:my_app
+```
+
+The hermetic toolchain will be automatically downloaded and used!
 
 ## Architecture
 

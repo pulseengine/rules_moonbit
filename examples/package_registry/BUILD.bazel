@@ -1,0 +1,31 @@
+# MoonBit package registry integration examples
+# This demonstrates the foundation for package management
+# that will be added in future versions
+
+load("//moonbit:defs.bzl", "moonbit_library")
+
+# Core library example (foundation for package management)
+moonbit_library(
+    name = "math_library",
+    srcs = ["math.mbt"],
+)
+
+# Library with dependencies (foundation for package management)
+moonbit_library(
+    name = "data_library",
+    srcs = ["data.mbt"],
+    deps = [":math_library"],
+)
+
+# Note: In a future version with moonbit_package rule, this would include:
+# 1. Package dependency management from MoonBit registry
+# 2. Version constraint support
+# 3. Feature selection
+# 4. Custom registry support
+# 5. Dependency resolution
+# 6. Package validation
+# 7. Metadata generation
+
+# The current implementation provides the core library and dependency
+# management that serves as the foundation for package management
+# when that feature is added.

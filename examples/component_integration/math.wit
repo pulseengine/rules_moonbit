@@ -1,0 +1,25 @@
+// WebAssembly Interface Type (WIT) definition for math component
+// This defines the interface that will be used by rules_wasm_component
+// to create the WebAssembly component from MoonBit code
+
+package example:math;
+
+// Define the math interface
+interface math {
+    // Add two numbers
+    add: func(a: u32, b: u32) -> u32;
+    
+    // Subtract two numbers
+    subtract: func(a: u32, b: u32) -> u32;
+    
+    // Multiply two numbers
+    multiply: func(a: u32, b: u32) -> u32;
+    
+    // Divide two numbers (returns result and remainder)
+    divide: func(a: u32, b: u32) -> (result: u32, remainder: u32);
+}
+
+// Define the calculator world that exports the math interface
+world calculator {
+    export math;
+}

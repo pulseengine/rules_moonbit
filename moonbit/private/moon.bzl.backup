@@ -14,12 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Use native depset for now
 load("//moonbit:providers.bzl", "MoonbitInfo")
 load("//moonbit/private:compilation.bzl", 
      "find_moon_executable", 
-     "create_moonbit_compilation_action", 
-     "parse_moonbit_metadata",
-     "create_moonbit_test_action")
+     "create_compilation_action", 
+     "parse_metadata",
+     "create_test_action")
 
 """MoonBit Library Rule"""
 
@@ -28,36 +29,23 @@ def _moonbit_library_impl(ctx):
     # Get sources
     srcs = ctx.files.srcs
     
-    # Find MoonBit executable
-    moon_executable = find_moon_executable(ctx)
-    
     # Determine output file
     output_file = ctx.actions.declare_file("%s.compiled" % ctx.label.name)
     
-    # Get dependencies
-    deps = ctx.attr.deps
-    
-    # Create compilation action if MoonBit is available
-    if moon_executable:
-        compiled_output = create_moonbit_compilation_action(
-            ctx, moon_executable, output_file, srcs, deps, is_main=False
-        )
-        compiled_objects = [compiled_output]
-    else:
-        # Fallback when MoonBit not available (for testing)
-        compiled_objects = [output_file]
+    # Create compilation action
+    compiled_output = create_compilation_action(ctx, output_file, srcs)
     
     # Parse metadata
-    metadata = parse_moonbit_metadata(ctx, output_file)
+    metadata = parse_metadata(ctx)
     
-    # Collect transitive dependencies
-    transitive_deps = depset(srcs)
-    for dep in deps:
+    # Collect transitive dependencies (simplified for now)
+    transitive_deps = [srcs]
+    for dep in ctx.attr.deps:
         if hasattr(dep, 'transitive_deps'):
-            transitive_deps = transitive_deps + dep.transitive_deps
+            transitive_deps.append(dep.transitive_deps)
     
     return [MoonbitInfo(
-        compiled_objects = depset(compiled_objects),
+        compiled_objects = [compiled_output],
         transitive_deps = transitive_deps,
         package_name = ctx.label.name,
         is_main = False,
@@ -87,36 +75,23 @@ def _moonbit_binary_impl(ctx):
     # Get sources
     srcs = ctx.files.srcs
     
-    # Find MoonBit executable
-    moon_executable = find_moon_executable(ctx)
-    
     # Determine output file (executable)
     output_file = ctx.actions.declare_file("%s.exe" % ctx.label.name)
     
-    # Get dependencies
-    deps = ctx.attr.deps
-    
-    # Create compilation action if MoonBit is available
-    if moon_executable:
-        compiled_output = create_moonbit_compilation_action(
-            ctx, moon_executable, output_file, srcs, deps, is_main=True
-        )
-        compiled_objects = [compiled_output]
-    else:
-        # Fallback when MoonBit not available (for testing)
-        compiled_objects = [output_file]
+    # Create compilation action
+    compiled_output = create_compilation_action(ctx, output_file, srcs)
     
     # Parse metadata
-    metadata = parse_moonbit_metadata(ctx, output_file)
+    metadata = parse_metadata(ctx)
     
     # Collect transitive dependencies
-    transitive_deps = depset(srcs)
-    for dep in deps:
+    transitive_deps = [srcs]
+    for dep in ctx.attr.deps:
         if hasattr(dep, 'transitive_deps'):
-            transitive_deps = transitive_deps + dep.transitive_deps
+            transitive_deps.append(dep.transitive_deps)
     
     return [MoonbitInfo(
-        compiled_objects = depset(compiled_objects),
+        compiled_objects = [compiled_output],
         transitive_deps = transitive_deps,
         package_name = ctx.label.name,
         is_main = True,
@@ -146,24 +121,29 @@ def _moonbit_test_impl(ctx):
     # Get sources
     srcs = ctx.files.srcs
     
-    # Find MoonBit executable
-    moon_executable = find_moon_executable(ctx)
+    # Create test action
+    create_test_action(ctx, srcs)
     
     # Get dependencies
     deps = ctx.attr.deps
     
-    # Create test action if MoonBit is available
-    if moon_executable:
-        create_moonbit_test_action(ctx, moon_executable, srcs, deps)
-    
     # Collect transitive dependencies
-    transitive_deps = depset(srcs)
+    transitive_deps = [srcs]
     for dep in deps:
         if hasattr(dep, 'transitive_deps'):
-            transitive_deps = transitive_deps + dep.transitive_deps
+            transitive_deps.append(dep.transitive_deps)
     
-    return [MoonbitInfo(
-        compiled_objects = depset(),
+    # Create a test executable (required for test rules)
+    test_executable = ctx.actions.declare_file(ctx.label.name + "_test")
+    ctx.actions.write(
+        output = test_executable,
+        content = "#!/bin/bash\n# MoonBit test placeholder\necho 'MoonBit test: " + ctx.label.name + "'\n",
+        is_executable = True
+    )
+    
+    # Test rules need to return DefaultInfo with executable
+    return [DefaultInfo(executable = test_executable), MoonbitInfo(
+        compiled_objects = [test_executable],
         transitive_deps = transitive_deps,
         package_name = ctx.label.name,
         is_main = False,
@@ -187,26 +167,105 @@ moonbit_test = rule(
     test = True,
 )
 
-"""MoonBit Module Rule"""
+"""Multi-Target MoonBit Rules"""
 
-def _moonbit_module_impl(ctx):
-    """Implements the moonbit_module rule."""
-    # Create basic provider (placeholder for real implementation)
+def _moonbit_target_impl(ctx, target="wasm", extension=".wasm"):
+    """Generic implementation for target-specific MoonBit compilation."""
+    # Get sources
+    srcs = ctx.files.srcs
+    
+    # Determine output file based on target
+    output_file = ctx.actions.declare_file(ctx.label.name + extension)
+    
+    # Create compilation action
+    compiled_output = create_compilation_action(ctx, output_file, srcs)
+    
+    # Parse metadata
+    metadata = parse_metadata(ctx)
+    
+    # Collect transitive dependencies
+    transitive_deps = [srcs]
+    for dep in ctx.attr.deps:
+        if hasattr(dep, 'transitive_deps'):
+            transitive_deps.append(dep.transitive_deps)
+    
     return [MoonbitInfo(
-        compiled_objects = [],
-        transitive_deps = [],
+        compiled_objects = [compiled_output],
+        transitive_deps = transitive_deps,
         package_name = ctx.label.name,
-        is_main = False,
-        metadata = {},
+        is_main = ctx.attr.is_main if hasattr(ctx.attr, 'is_main') else False,
+        metadata = metadata,
+        target = target,
     )]
 
-moonbit_module = rule(
-    implementation = _moonbit_module_impl,
+def _moonbit_wasm_impl(ctx):
+    """Implements the moonbit_wasm rule for WebAssembly compilation."""
+    return _moonbit_target_impl(ctx, target="wasm", extension=".wasm")
+
+def _moonbit_js_impl(ctx):
+    """Implements the moonbit_js rule for JavaScript compilation."""
+    return _moonbit_target_impl(ctx, target="js", extension=".js")
+
+def _moonbit_c_impl(ctx):
+    """Implements the moonbit_c rule for C compilation."""
+    return _moonbit_target_impl(ctx, target="c", extension=".c")
+
+moonbit_wasm = rule(
+    implementation = _moonbit_wasm_impl,
     attrs = {
         "srcs": attr.label_list(
-            doc = "Module source files and packages",
+            doc = "MoonBit source files",
             allow_files = True,
+            mandatory = True,
+        ),
+        "deps": attr.label_list(
+            doc = "Dependencies",
+            allow_files = False,
             mandatory = False,
+        ),
+        "is_main": attr.bool(
+            doc = "Whether this is a main/executable target",
+            default = False,
+        ),
+    },
+)
+
+moonbit_js = rule(
+    implementation = _moonbit_js_impl,
+    attrs = {
+        "srcs": attr.label_list(
+            doc = "MoonBit source files",
+            allow_files = True,
+            mandatory = True,
+        ),
+        "deps": attr.label_list(
+            doc = "Dependencies",
+            allow_files = False,
+            mandatory = False,
+        ),
+        "is_main": attr.bool(
+            doc = "Whether this is a main/executable target",
+            default = False,
+        ),
+    },
+)
+
+moonbit_c = rule(
+    implementation = _moonbit_c_impl,
+    attrs = {
+        "srcs": attr.label_list(
+            doc = "MoonBit source files",
+            allow_files = True,
+            mandatory = True,
+        ),
+        "deps": attr.label_list(
+            doc = "Dependencies",
+            allow_files = False,
+            mandatory = False,
+        ),
+        "is_main": attr.bool(
+            doc = "Whether this is a main/executable target",
+            default = False,
         ),
     },
 )

@@ -1,0 +1,17 @@
+load("//moonbit:defs.bzl", "moonbit_library", "moonbit_binary", "moonbit_test")
+
+# Example demonstrating JSON-based Bazel-MoonBit integration
+# This shows how Bazel and MoonBit communicate via JSON configuration files
+
+moonbit_library(
+    name = "json_example_lib",
+    srcs = ["lib.mbt"],
+    deps = [],
+)
+
+moonbit_binary(
+    name = "json_example_bin",
+    srcs = ["main.mbt"],
+    deps = [":json_example_lib"],
+)
+

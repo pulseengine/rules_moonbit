@@ -31,6 +31,7 @@ MoonbitInfo = provider(
         "package_name": "MoonBit package name",
         "is_main": "Whether this is a main package",
         "metadata": "Package metadata dict",
+        "target": "Compilation target (wasm, js, c, native)",
     },
 )
 
@@ -44,17 +45,7 @@ MoonbitToolchainInfo = provider(
         "all_files": "All toolchain files",
         "supports_wasm": "Whether WASM target is supported",
         "supports_native": "Whether native target is supported",
-    },
-)
-
-# Provider for MoonBit module information
-MoonbitModuleInfo = provider(
-    doc = "Information about a MoonBit module",
-    fields = {
-        "module_name": "Module name",
-        "version": "Module version",
-        "packages": "Dict of package names to MoonbitInfo",
-        "dependencies": "List of module dependencies",
-        "metadata": "Module metadata dict",
+        "supports_js": "Whether JavaScript target is supported",
+        "supports_c": "Whether C target is supported",
     },
 )

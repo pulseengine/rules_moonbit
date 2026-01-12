@@ -10,12 +10,16 @@ for MoonBit language support. They are subject to semantic versioning guarantees
 
 DO NOT depend on //moonbit/private - those are implementation details.
 
-Available rules:
-    moonbit_library: Compile a MoonBit library
-    moonbit_binary: Build a MoonBit executable
-    moonbit_test: Create a MoonBit test
-    moonbit_module: Build a MoonBit module
-    
+ Available rules:
+     moonbit_library: Compile a MoonBit library
+     moonbit_binary: Build a MoonBit executable  
+     moonbit_test: Create a MoonBit test
+     moonbit_wasm: Compile MoonBit to WebAssembly
+     moonbit_js: Compile MoonBit to JavaScript
+     moonbit_c: Compile MoonBit to C
+     moonbit_toolchain: Configure MoonBit toolchain
+     moonbit_register_toolchains: Register MoonBit toolchains
+     
 Example usage:
 
     moonbit_library(
@@ -45,13 +49,16 @@ Example usage:
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Load private implementations with underscore prefix
+# Load private implementations
 load("//moonbit/private:moon.bzl", 
-     _moonbit_library = "moonbit_library", 
-     _moonbit_binary = "moonbit_binary", 
-     _moonbit_test = "moonbit_test", 
-     _moonbit_module = "moonbit_module")
+      _moonbit_library = "moonbit_library", 
+      _moonbit_binary = "moonbit_binary", 
+      _moonbit_test = "moonbit_test",
+      _moonbit_wasm = "moonbit_wasm",
+      _moonbit_js = "moonbit_js", 
+      _moonbit_c = "moonbit_c")
 
+# Load toolchain implementation
 load("//moonbit/private:toolchain.bzl", 
      _moonbit_toolchain = "moonbit_toolchain", 
      _moonbit_register_toolchains = "moonbit_register_toolchains")
@@ -59,18 +66,20 @@ load("//moonbit/private:toolchain.bzl",
 # Load providers for public use
 load("//moonbit:providers.bzl", 
      "MoonbitInfo", 
-     "MoonbitToolchainInfo", 
-     "MoonbitModuleInfo")
+     "MoonbitToolchainInfo")
 
 # Re-export providers for convenience
 moonbit_info = MoonbitInfo
 moonbit_toolchain_info = MoonbitToolchainInfo
-moonbit_module_info = MoonbitModuleInfo
 
-# Re-export rules for public API (following rules_rust pattern)
+# Re-export core rules for public API
 moonbit_library = _moonbit_library
 moonbit_binary = _moonbit_binary
 moonbit_test = _moonbit_test
-moonbit_module = _moonbit_module
+moonbit_wasm = _moonbit_wasm
+moonbit_js = _moonbit_js
+moonbit_c = _moonbit_c
+
+# Re-export toolchain functions
 moonbit_toolchain = _moonbit_toolchain
 moonbit_register_toolchains = _moonbit_register_toolchains

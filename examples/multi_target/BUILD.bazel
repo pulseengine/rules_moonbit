@@ -1,0 +1,60 @@
+load("//moonbit:defs.bzl", "moonbit_library", "moonbit_wasm", "moonbit_js", "moonbit_c")
+
+# Multi-target MoonBit example demonstrating:
+# 1. WebAssembly compilation
+# 2. JavaScript compilation  
+# 3. C compilation
+# 4. Cross-target compatibility
+# 5. Bazel integration for each target
+
+# Shared library that can be compiled to multiple targets
+moonbit_library(
+    name = "shared_lib",
+    srcs = ["shared.mbt"],
+    deps = [],
+)
+
+# WebAssembly target - can be consumed by Wasm rules
+moonbit_wasm(
+    name = "wasm_app",
+    srcs = ["main.mbt"],
+    deps = [":shared_lib"],
+    is_main = True,
+)
+
+# JavaScript target - can be consumed by JS rules
+moonbit_js(
+    name = "js_app",
+    srcs = ["main.mbt"],
+    deps = [":shared_lib"],
+    is_main = True,
+)
+
+# C target - can be consumed by CC rules
+moonbit_c(
+    name = "c_app",
+    srcs = ["main.mbt"],
+    deps = [":shared_lib"],
+    is_main = True,
+)
+
+# Example showing how these outputs could be consumed by other Bazel rules
+# (These would be uncommented when actual JS/Wasm/CC rules are available)
+
+# js_library(
+#     name = "js_wrapper",
+#     srcs = [":js_app"],  # MoonBit JS output consumed by JS rules
+#     deps = [],
+# )
+
+# wasm_library(
+#     name = "wasm_wrapper",
+#     srcs = [":wasm_app"],  # MoonBit Wasm output consumed by Wasm rules
+#     deps = [],
+# )
+
+# cc_library(
+#     name = "c_wrapper",
+#     srcs = [":c_app"],  # MoonBit C output consumed by CC rules
+#     deps = [],
+# )

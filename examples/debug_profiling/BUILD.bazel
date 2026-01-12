@@ -1,0 +1,24 @@
+# Debug and profiling example
+# This demonstrates the foundation for debugging support
+# that will be added in future versions
+
+load("//moonbit:defs.bzl", "moonbit_wasm", "moonbit_test")
+
+# Core Wasm compilation (foundation for debugging)
+moonbit_wasm(
+    name = "debug_wasm_core",
+    srcs = ["debug_example.mbt"],
+    is_main = True,
+)
+
+
+
+# Note: In a future version with moonbit_debug rule, this would include:
+# 1. Debug symbol generation
+# 2. Profiling instrumentation
+# 3. Coverage analysis
+# 4. Performance analysis
+# 5. Debug configuration management
+
+# The current implementation provides the core compilation and testing
+# that serves as the foundation for debugging when that feature is added.

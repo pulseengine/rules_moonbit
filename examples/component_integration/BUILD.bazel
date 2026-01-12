@@ -1,0 +1,22 @@
+# WebAssembly Component Model integration example
+# This demonstrates the foundation for Component Model support
+# that will be added when rules_wasm_component is available
+
+load("//moonbit:defs.bzl", "moonbit_wasm")
+
+# Core Wasm compilation (foundation for components)
+moonbit_wasm(
+    name = "math_wasm_core",
+    srcs = ["math.mbt"],
+    is_main = True,
+)
+
+# Note: In a future version with moonbit_component rule, this would include:
+# 1. WIT interface processing for Component Model
+# 2. Component creation with rules_wasm_component delegation
+# 3. Component validation and testing
+# 4. Integration with Component Model tooling
+
+# The current implementation provides the core Wasm compilation that
+# serves as the foundation for Component Model support when that
+# feature is added with rules_wasm_component integration.

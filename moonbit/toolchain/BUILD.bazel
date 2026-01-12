@@ -1,0 +1,22 @@
+# BUILD file for MoonBit toolchain
+
+package(default_visibility = ["//visibility:public"])
+
+# Define the MoonBit toolchain target
+moonbit_toolchain(
+    name = "moonbit_toolchain",
+    version = "0.6.33",
+)
+
+# Register the toolchain
+toolchain(
+    name = "moonbit_toolchain_type",
+    toolchain = ":moonbit_toolchain",
+    toolchain_type = "@rules_moonbit//moonbit:moonbit_toolchain_type",
+    exec_compatible_with = [
+        "@platforms//host:host",
+    ],
+    target_compatible_with = [
+        "@platforms//host:host",
+    ],
+)

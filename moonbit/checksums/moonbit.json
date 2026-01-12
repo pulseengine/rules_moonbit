@@ -1,76 +1,63 @@
 {
   "versions": {
-    "0.6.33": {
+    "latest": {
       "platforms": {
-        "darwin_arm64": {
-          "sha256": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2",
-          "url_suffix": "moonbit-0.6.33-darwin-arm64.tar.gz",
+        "darwin_aarch64": {
+          "sha256": "89d87662194a4a2d7cc345b1fecf8bbe42e0a00ee7e68c8f2e407f3f3da4b51f",
+          "url_suffix": "moonbit-darwin-aarch64.tar.gz",
           "binaries": ["moon"]
         },
-        "darwin_amd64": {
-          "sha256": "b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3",
-          "url_suffix": "moonbit-0.6.33-darwin-amd64.tar.gz",
+        "linux_x86_64": {
+          "sha256": "401d0c5408819a0ed6197d2db54c10e17fe16c6e5654df1bf8b2de71a9bbc1e5",
+          "url_suffix": "moonbit-linux-x86_64.tar.gz",
           "binaries": ["moon"]
         },
-        "linux_amd64": {
-          "sha256": "c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4",
-          "url_suffix": "moonbit-0.6.33-linux-amd64.tar.gz",
-          "binaries": ["moon"]
-        },
-        "linux_arm64": {
-          "sha256": "d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5",
-          "url_suffix": "moonbit-0.6.33-linux-arm64.tar.gz",
-          "binaries": ["moon"]
-        },
-        "windows_amd64": {
-          "sha256": "e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6",
-          "url_suffix": "moonbit-0.6.33-windows-amd64.tar.gz",
+        "windows_x86_64": {
+          "sha256": "TODO",
+          "url_suffix": "moonbit-windows-x86_64.zip",
           "binaries": ["moon.exe"]
         }
       }
     },
-    "0.6.32": {
+    "0.6.33": {
       "platforms": {
         "darwin_arm64": {
-          "sha256": "f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7",
-          "url_suffix": "moonbit-0.6.32-darwin-arm64.tar.gz",
-          "binaries": ["moon"]
+          "sha256": "89d87662194a4a2d7cc345b1fecf8bbe42e0a00ee7e68c8f2e407f3f3da4b51f",
+          "url_suffix": "moonbit-darwin-aarch64.tar.gz",
+          "binaries": ["moon"],
+          "status": "verified"
         },
         "darwin_amd64": {
-          "sha256": "a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8",
-          "url_suffix": "moonbit-0.6.32-darwin-amd64.tar.gz",
-          "binaries": ["moon"]
+          "sha256": "TODO",
+          "url_suffix": "moonbit-darwin-x86_64.tar.gz",
+          "binaries": ["moon"],
+          "status": "needed"
         },
         "linux_amd64": {
-          "sha256": "b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9",
-          "url_suffix": "moonbit-0.6.32-linux-amd64.tar.gz",
-          "binaries": ["moon"]
+          "sha256": "401d0c5408819a0ed6197d2db54c10e17fe16c6e5654df1bf8b2de71a9bbc1e5",
+          "url_suffix": "moonbit-linux-x86_64.tar.gz",
+          "binaries": ["moon"],
+          "status": "verified"
         },
         "linux_arm64": {
-          "sha256": "c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0",
-          "url_suffix": "moonbit-0.6.32-linux-arm64.tar.gz",
-          "binaries": ["moon"]
+          "sha256": "TODO",
+          "url_suffix": "moonbit-linux-arm64.tar.gz",
+          "binaries": ["moon"],
+          "status": "needed"
+        },
+        "windows_amd64": {
+          "sha256": "TODO",
+          "url_suffix": "moonbit-windows-x86_64.zip",
+          "binaries": ["moon.exe"],
+          "status": "needed"
         }
       }
-    },
-    "0.6.31": {
-      "platforms": {
-        "darwin_arm64": {
-          "sha256": "d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1",
-          "url_suffix": "moonbit-0.6.31-darwin-arm64.tar.gz",
-          "binaries": ["moon"]
-        },
-        "darwin_amd64": {
-          "sha256": "e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2",
-          "url_suffix": "moonbit-0.6.31-darwin-amd64.tar.gz",
-          "binaries": ["moon"]
-        },
-        "linux_amd64": {
-          "sha256": "f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3",
-          "url_suffix": "moonbit-0.6.31-linux-amd64.tar.gz",
-          "binaries": ["moon"]
-        }
-      }
+    }
+  },
+  "cores": {
+    "latest": {
+      "sha256": "bf12dce0a92d84911e0d30cb74ac73f80d03a89f0933a4bda87e2f6647a00887",
+      "url_suffix": "core-latest.tar.gz"
     }
   }
 }

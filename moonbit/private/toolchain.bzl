@@ -1,4 +1,4 @@
-"""MoonBit toolchain implementation with hermetic tool management"""
+"""MoonBit toolchain implementation - PRIVATE"""
 
 # Copyright 2026 The Rules_Moonbit Authors. All rights reserved.
 #
@@ -15,95 +15,55 @@
 # limitations under the License.
 
 load("//moonbit:providers.bzl", "MoonbitToolchainInfo")
-load("//moonbit/tools:vendor_toolchains.bzl", "vendor_moonbit_toolchain")
+# For now, we'll use a simpler approach without complex toolchain registration
+# The toolchain functionality will be provided through the MoonbitToolchainInfo provider
+
 
 def moonbit_toolchain_impl(ctx):
-    """Implements the MoonBit toolchain rule with hermetic support."""
+    """Implements the MoonBit toolchain rule."""
     
-    # Option 1: Use hermetic toolchain from vendor system
-    # This would be the preferred approach in production
+    # Get version from attributes
+    version = ctx.attr.version if hasattr(ctx.attr, 'version') else "0.6.33"
     
-    # Option 2: Fallback to system installation
-    moon_executable = None
-    try:
-        moon_path = ctx.which("moon")
-        if moon_path:
-            moon_executable = moon_path
-    except:
-        pass
+    # For now, use placeholder executable since we don't have actual MoonBit
+    # In production, this would find the actual moon executable
+    moon_executable = "moon"  # Placeholder
     
-    # For now, return basic toolchain info
-    # In production, this would use the hermetic toolchain
-    return [MoonbitToolchainInfo(
+    # Create toolchain info
+    toolchain_info = MoonbitToolchainInfo(
         moon_executable = moon_executable,
-        version = "0.6.33",  # Would come from hermetic toolchain
+        version = version,
         target_platform = "native",
-        all_files = [],
+        all_files = [moon_executable],
         supports_wasm = True,
         supports_native = True,
-    )]
+        supports_js = True,
+        supports_c = True,
+    )
+    
+    return [toolchain_info]
 
+# Export the toolchain rule
 moonbit_toolchain = rule(
     implementation = moonbit_toolchain_impl,
-    attrs = {},
+    attrs = {
+        "version": attr.string(
+            doc = "MoonBit version",
+            default = "0.6.33",
+        ),
+    },
+
 )
+
 
 def moonbit_register_toolchains(
     name = "moonbit_toolchains",
     moon_executable = None,
     version = None,
-    target_platform = None,
+    target_platform = None
 ):
-    """Registers MoonBit toolchains for use in the workspace.
-    
-    This function provides two approaches:
-    1. Hermetic toolchain using vendor system (recommended)
-    2. System toolchain using existing installation
-    
-    Args:
-        name: Name for the toolchain registration
-        moon_executable: Optional explicit path to moon executable
-        version: Optional version override
-        target_platform: Optional target platform override
-    
-    Example (Hermetic approach - recommended):
-        load("//moonbit/tools:vendor_toolchains.bzl", "vendor_moonbit_toolchain")
-        
-        vendor_moonbit_toolchain(name = "moonbit_vendor")
-        
-        moonbit_register_toolchains(
-            name = "moonbit_toolchains",
-            moon_executable = "@moonbit_vendor//:moon",
-        )
-    
-    Example (System approach - for development):
-        moonbit_register_toolchains(
-            name = "moonbit_toolchains",
-        )
-    """
+    """Registers MoonBit toolchains for use in the workspace."""
     # For now, this is a placeholder
-    # In a real implementation, this would:
-    # 1. Register the toolchain with Bazel
-    # 2. Set up platform mappings
-    # 3. Configure toolchain resolution
+    # In a real implementation, this would register the toolchain with Bazel
+    # using native.toolchain() or similar mechanism
     pass
-
-# Hermetic toolchain vendor function for MODULE.bazel
-# This would be used in the main MODULE.bazel file
-def moonbit_hermetic_toolchain_setup():
-    """Sets up hermetic MoonBit toolchain using Bzlmod extensions.
-    
-    This function is designed to be used in MODULE.bazel:
-    
-    Example:
-        moonbit_setup = use_extension("//moonbit:extensions.bzl", "moonbit_hermetic_toolchain_setup")
-        use_repo(moonbit_setup, "moonbit_toolchains")
-    """
-    # This would be implemented using use_extension
-    # For now, it's a placeholder for the Bzlmod approach
-    vendor_moonbit_toolchain(name = "moonbit_hermetic")
-    
-    return struct(
-        toolchain_repo = "@moonbit_hermetic",
-        toolchain_target = "@moonbit_hermetic//:moon",
-    )

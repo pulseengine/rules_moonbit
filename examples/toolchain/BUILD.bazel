@@ -1,0 +1,41 @@
+load("//moonbit:defs.bzl", "moonbit_toolchain")
+
+# Advanced MoonBit toolchain configuration examples
+# These demonstrate the enhanced toolchain features available in rules_moonbit
+
+# Basic toolchain configuration with default settings
+moonbit_toolchain(
+    name = "default_toolchain",
+    version = "0.6.33",
+)
+
+# Enhanced toolchain with additional features
+moonbit_toolchain(
+    name = "enhanced_toolchain",
+    version = "0.6.33",
+    features = {
+        "experimental_component_model": "true",
+        "advanced_optimizations": "true",
+        "extended_debug_support": "true",
+    },
+)
+
+# Toolchain with extensions
+# Note: In a real implementation, this would load from a configuration file
+moonbit_toolchain(
+    name = "extended_toolchain",
+    version = "0.6.33",
+    features = {
+        "custom_feature": "enabled",
+    },
+    # extensions = ":toolchain_extensions",  # Would use extension file
+)
+
+# Note: The moonbit_toolchain rule provides:
+# - Version management and compatibility checking
+# - Feature configuration and validation
+# - Platform support management
+# - Toolchain health monitoring
+# - Extensibility for custom configurations
+# - Comprehensive documentation generation
+# - Validation and error reporting

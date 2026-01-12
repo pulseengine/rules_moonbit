@@ -1,0 +1,36 @@
+# Foreign Function Interface (FFI) integration example
+# This demonstrates how to create multi-target MoonBit code
+# that can be used for FFI in the future
+
+load("//moonbit:defs.bzl", "moonbit_wasm", "moonbit_js", "moonbit_c")
+
+# WebAssembly compilation (can be used for FFI)
+moonbit_wasm(
+    name = "wasm_ffi_example",
+    srcs = ["ffi_example.mbt"],
+    is_main = True,
+)
+
+# JavaScript compilation (can be used for FFI)
+moonbit_js(
+    name = "js_ffi_example",
+    srcs = ["ffi_example.mbt"],
+    is_main = True,
+)
+
+# C compilation (can be used for FFI)
+moonbit_c(
+    name = "c_ffi_example",
+    srcs = ["ffi_example.mbt"],
+    is_main = True,
+)
+
+# Note: These examples demonstrate the foundation for FFI integration.
+# In a future version with moonbit_ffi rule, this would include:
+# - WebAssembly: Header files with import/export declarations
+# - JavaScript: JS modules with FFI utilities  
+# - C: Header and source files with FFI functions
+# - Native: Platform-specific FFI bindings
+
+# The current implementation provides the compiled outputs that
+# can be used as the basis for FFI when that feature is added.

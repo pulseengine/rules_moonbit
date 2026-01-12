@@ -1,0 +1,60 @@
+# MoonBit optimization examples
+# This demonstrates multi-target compilation with different optimization approaches
+
+load("//moonbit:defs.bzl", "moonbit_wasm", "moonbit_js", "moonbit_c")
+
+# WebAssembly compilation with different optimization approaches
+moonbit_wasm(
+    name = "wasm_debug",
+    srcs = ["math.mbt"],
+    is_main = False,
+)
+
+moonbit_wasm(
+    name = "wasm_release",
+    srcs = ["math.mbt"],
+    is_main = True,
+)
+
+moonbit_wasm(
+    name = "wasm_aggressive",
+    srcs = ["math.mbt"],
+    is_main = True,
+)
+
+# JavaScript compilation with different optimization approaches
+moonbit_js(
+    name = "js_debug",
+    srcs = ["math.mbt"],
+    is_main = False,
+)
+
+moonbit_js(
+    name = "js_release",
+    srcs = ["math.mbt"],
+    is_main = True,
+)
+
+# C compilation with different optimization approaches
+moonbit_c(
+    name = "c_debug",
+    srcs = ["math.mbt"],
+    is_main = False,
+)
+
+moonbit_c(
+    name = "c_release",
+    srcs = ["math.mbt"],
+    is_main = True,
+)
+
+# Note: These examples demonstrate the foundation for optimization.
+# In a future version with moonbit_optimize rule, this would include:
+# - Target-specific optimization configurations
+# - Optimization level control (debug, release, aggressive)
+# - Use case-based recommendations (general, size_critical, performance_critical)
+# - Advanced optimization features (LTO, inlining, DCE, etc.)
+# - Optimization analysis and reporting
+
+# The current implementation provides the compiled outputs that
+# can be used as the basis for optimization when that feature is added.
