@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("//moonbit/private:toolchain.bzl", "moonbit_hermetic_toolchain_setup")
+load("//moonbit/tools:hermetic_toolchain.bzl", "moonbit_register_hermetic_toolchain")
 
 """MoonBit Bzlmod extension for hermetic toolchain setup.
 
@@ -24,5 +24,5 @@ using Bzlmod's use_extension mechanism.
 
 moonbit_hermetic_toolchain = use_extension(
     "//moonbit:extensions.bzl",
-    "moonbit_hermetic_toolchain_setup"
+    "moonbit_register_hermetic_toolchain"
 )

@@ -200,4 +200,79 @@ The integration is implemented in:
 - `moonbit/private/compilation.bzl` - Compilation actions with JSON
 - `moonbit/private/toolchain.bzl` - Toolchain management with JSON metadata
 
+## MoonBit Checksum Registry Integration
+
+The enhanced checksum registry provides comprehensive JSON-based checksum management:
+
+### New Comprehensive Format
+
+```json
+{
+  "tool_name": "moonbit",
+  "github_repo": "moonbitlang/moonbit",
+  "latest_version": "0.6.33",
+  "last_checked": "2026-01-01T00:00:00Z",
+  "build_type": "binary",
+  "versions": {
+    "0.6.33": {
+      "release_date": "2026-01-01",
+      "platforms": {
+        "darwin_arm64": {
+          "sha256": "89d87662194a4a2d7cc345b1fecf8bbe42e0a00ee7e68c8f2e407f3f3da4b51f",
+          "url_suffix": "moonbit-darwin-aarch64.tar.gz",
+          "binaries": ["moon"],
+          "archive_type": "tar.gz"
+        },
+        "linux_amd64": {
+          "sha256": "401d0c5408819a0ed6197d2db54c10e17fe16c6e5654df1bf8b2de71a9bbc1e5",
+          "url_suffix": "moonbit-linux-x86_64.tar.gz",
+          "binaries": ["moon"],
+          "archive_type": "tar.gz"
+        }
+      }
+    }
+  },
+  "supported_platforms": [
+    "darwin_amd64", "darwin_arm64",
+    "linux_amd64", "linux_arm64",
+    "windows_amd64"
+  ]
+}
+```
+
+### Key Features
+
+1. **Comprehensive Metadata**: Includes tool name, GitHub repository, versions, platforms, and more
+2. **Version History**: Complete version history with release dates
+3. **Platform Support**: Explicit platform definitions with binaries and archive types
+4. **Backward Compatibility**: Automatic conversion from legacy format
+5. **Validation**: Built-in checksum validation and auto-fix capabilities
+
+### Integration with Bazel
+
+The checksum registry integrates with Bazel's hermetic toolchain system:
+
+```python
+# In vendor_toolchains.bzl
+load("//moonbit/checksums:registry_v2.bzl", 
+     "get_moonbit_checksum_v2", 
+     "get_moonbit_info_v2", 
+     "get_latest_moonbit_version_v2")
+
+# Use enhanced functions with fallback to legacy
+def _vendor_moonbit_toolchain_impl(repository_ctx):
+    latest_version = get_latest_moonbit_version_v2(repository_ctx)
+    tool_info = get_moonbit_info_v2(repository_ctx, latest_version, platform)
+    checksum = get_moonbit_checksum_v2(repository_ctx, latest_version, platform)
+    # ... rest of implementation
+```
+
+### Migration Guide
+
+1. **Copy Files**: Copy `registry_v2.bzl` and `moonbit_v2.json` to your project
+2. **Update BUILD.bazel**: Export both legacy and new files
+3. **Update Imports**: Change imports to use enhanced registry
+4. **Test**: Verify both formats work correctly
+5. **Gradual Adoption**: Enable new features when ready
+
 See the example in `examples/json_integration/` for a complete working example.

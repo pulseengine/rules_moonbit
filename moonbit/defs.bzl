@@ -17,6 +17,8 @@ DO NOT depend on //moonbit/private - those are implementation details.
      moonbit_wasm: Compile MoonBit to WebAssembly
      moonbit_js: Compile MoonBit to JavaScript
      moonbit_c: Compile MoonBit to C
+     moonbit_component: Create WebAssembly Component Model from MoonBit (delegates to rules_wasm_component)
+     moonbit_package: Manage MoonBit package dependencies from registry
      moonbit_toolchain: Configure MoonBit toolchain
      moonbit_register_toolchains: Register MoonBit toolchains
      
@@ -56,7 +58,12 @@ load("//moonbit/private:moon.bzl",
       _moonbit_test = "moonbit_test",
       _moonbit_wasm = "moonbit_wasm",
       _moonbit_js = "moonbit_js", 
-      _moonbit_c = "moonbit_c")
+      _moonbit_c = "moonbit_c",
+      _moonbit_component = "moonbit_component")
+
+# Load package implementation
+load("//moonbit/private:package_utils.bzl", 
+      _moonbit_package = "moonbit_package")
 
 # Load toolchain implementation
 load("//moonbit/private:toolchain.bzl", 
@@ -79,6 +86,8 @@ moonbit_test = _moonbit_test
 moonbit_wasm = _moonbit_wasm
 moonbit_js = _moonbit_js
 moonbit_c = _moonbit_c
+moonbit_component = _moonbit_component
+moonbit_package = _moonbit_package
 
 # Re-export toolchain functions
 moonbit_toolchain = _moonbit_toolchain

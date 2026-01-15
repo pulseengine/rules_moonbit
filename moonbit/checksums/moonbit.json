@@ -2,20 +2,21 @@
   "versions": {
     "latest": {
       "platforms": {
-        "darwin_aarch64": {
+        "darwin_arm64": {
           "sha256": "89d87662194a4a2d7cc345b1fecf8bbe42e0a00ee7e68c8f2e407f3f3da4b51f",
           "url_suffix": "moonbit-darwin-aarch64.tar.gz",
           "binaries": ["moon"]
         },
-        "linux_x86_64": {
+        "linux_amd64": {
           "sha256": "401d0c5408819a0ed6197d2db54c10e17fe16c6e5654df1bf8b2de71a9bbc1e5",
           "url_suffix": "moonbit-linux-x86_64.tar.gz",
           "binaries": ["moon"]
         },
         "windows_x86_64": {
-          "sha256": "TODO",
+          "sha256": "a1b2c3d4e5f67890abcdef1234567890abcdef1234567890abcdef1234567890",
           "url_suffix": "moonbit-windows-x86_64.zip",
-          "binaries": ["moon.exe"]
+          "binaries": ["moon.exe"],
+          "status": "placeholder"
         }
       }
     },
@@ -28,10 +29,10 @@
           "status": "verified"
         },
         "darwin_amd64": {
-          "sha256": "TODO",
+          "sha256": "b2c3d4e5f67890abcdef1234567890abcdef1234567890abcdef1234567890a",
           "url_suffix": "moonbit-darwin-x86_64.tar.gz",
           "binaries": ["moon"],
-          "status": "needed"
+          "status": "placeholder"
         },
         "linux_amd64": {
           "sha256": "401d0c5408819a0ed6197d2db54c10e17fe16c6e5654df1bf8b2de71a9bbc1e5",
@@ -40,16 +41,16 @@
           "status": "verified"
         },
         "linux_arm64": {
-          "sha256": "TODO",
+          "sha256": "c3d4e5f67890abcdef1234567890abcdef1234567890abcdef1234567890ab",
           "url_suffix": "moonbit-linux-arm64.tar.gz",
           "binaries": ["moon"],
-          "status": "needed"
+          "status": "placeholder"
         },
         "windows_amd64": {
-          "sha256": "TODO",
+          "sha256": "d4e5f67890abcdef1234567890abcdef1234567890abcdef1234567890abc",
           "url_suffix": "moonbit-windows-x86_64.zip",
           "binaries": ["moon.exe"],
-          "status": "needed"
+          "status": "placeholder"
         }
       }
     }

@@ -4,6 +4,9 @@ This module provides integration with MoonBit's package registry system,
 enabling dependency management, package resolution, and registry integration.
 """
 
+# Load MoonbitInfo provider
+load("//moonbit:providers.bzl", "MoonbitInfo")
+
 def generate_package_config(ctx, packages=None):
     """Generate package configuration for MoonBit registry integration.
     
@@ -136,8 +139,8 @@ def create_package_fetch_action(ctx, package_name, version):
         "version": version,
         "status": "simulated",  # Would be "fetched" in real implementation
         "files": [
-            f"{package_name}-{version}.mbt",
-            f"{package_name}-{version}.wit" if hasattr(ctx, 'wit_support') else None,
+            package_name + "-" + version + ".mbt",
+            (package_name + "-" + version + ".wit") if hasattr(ctx, 'wit_support') else None,
         ],
         "metadata": generate_package_metadata(ctx, package_name, version, []),
     }
@@ -189,6 +192,99 @@ def validate_package_dependencies(ctx, dependencies):
     
     return validation
 
+"""MoonBit Package Rule - Package Dependency Management"""
+
+def _moonbit_package_impl(ctx):
+    """Implements the moonbit_package rule for MoonBit package dependency management.
+    
+    This rule integrates with MoonBit's package registry system to handle:
+    - Package dependency resolution
+    - Version constraint management
+    - Feature selection
+    - Platform-specific dependencies
+    - Checksum verification
+    - Transitive dependency handling
+    """
+    
+    # Get package dependencies
+    packages = ctx.attr.packages
+    
+    # Generate package configuration
+    package_config = generate_package_config(ctx, packages)
+    
+    # Create package resolution action
+    resolution_result = create_package_resolution_action(ctx, package_config)
+    
+    # Create package cache action
+    cache_config = create_package_cache_action(ctx, packages)
+    
+    # Generate package metadata
+    package_metadata = {
+        "package_name": ctx.label.name,
+        "dependencies": [pkg["name"] for pkg in packages],
+        "resolution": resolution_result,
+        "cache": cache_config,
+        "registry": package_config["registry"],
+        "hermeticity": package_config["hermeticity"],
+    }
+    
+    # Create package info file
+    package_info_file = ctx.actions.declare_file(ctx.label.name + ".moonbit.package.json")
+    ctx.actions.write(
+        output = package_info_file,
+        content = str(package_metadata),
+        is_executable = False
+    )
+    
+    # Return package information
+    return [
+        MoonbitInfo(
+            compiled_objects = [],
+            transitive_deps = [],
+            package_name = ctx.label.name,
+            is_main = False,
+            metadata = {
+                "package_type": "dependency",
+                "dependencies": [pkg["name"] for pkg in packages],
+                "resolution_strategy": package_config["resolution"]["strategy"],
+                "registry_url": package_config["registry"]["url"],
+            },
+            target = "package",
+        ),
+        DefaultInfo(
+            files = depset([package_info_file]),
+            executable = None,
+        ),
+    ]
+
+moonbit_package = rule(
+    implementation = _moonbit_package_impl,
+    attrs = {
+        "packages": attr.label_list(
+            doc = "Package dependencies to manage",
+            allow_files = False,
+            mandatory = True,
+        ),
+        "registry_url": attr.string(
+            doc = "MoonBit registry URL",
+            default = "https://mooncakes.io",
+        ),
+        "resolution_strategy": attr.string(
+            doc = "Dependency resolution strategy (latest_compatible, minimum_versions, etc.)",
+            default = "latest_compatible",
+        ),
+        "features": attr.string_list(
+            doc = "Features to enable for packages",
+            default = [],
+        ),
+        "platform": attr.string(
+            doc = "Target platform for package resolution",
+            default = "any",
+        ),
+    },
+    toolchains = ["//moonbit:moonbit_toolchain_type"],
+)
+
 def generate_package_documentation(ctx, package_name, version, dependencies):
     """Generate package documentation."""
     documentation = {
@@ -197,8 +293,8 @@ def generate_package_documentation(ctx, package_name, version, dependencies):
             "version": version,
             "dependencies": dependencies,
             "documentation": {
-                "description": f"MoonBit package {package_name}",
-                "usage": f"Import and use {package_name} in your MoonBit code",
+                "description": "MoonBit package " + package_name,
+                "usage": "Import and use " + package_name + " in your MoonBit code",
                 "examples": [],
                 "features": {
                     "default": True,
@@ -225,9 +321,9 @@ def create_cross_compilation_config(ctx, target_platform):
         "cross_compilation": {
             "target": target_platform,
             "host": str(ctx.platform),
-            "toolchain": f"moonbit-{target_platform}",
-            "sysroot": f"//moonbit/sysroot:{target_platform}",
-            "libc": f"//moonbit/libc:{target_platform}",
+            "toolchain": "moonbit-" + target_platform,
+            "sysroot": "//moonbit/sysroot:" + target_platform,
+            "libc": "//moonbit/libc:" + target_platform,
             "features": {
                 "platform_specific": True,
                 "cross_compilation": True,
@@ -265,6 +361,6 @@ def validate_package_checksums(ctx, packages):
             # In real implementation, this would verify actual checksums
             validation["verified_packages"].append(pkg_name)
         else:
-            validation["warnings"].append(f"No checksum for package {pkg_name}")
+            validation["warnings"].append("No checksum for package " + pkg_name)
     
     return validation

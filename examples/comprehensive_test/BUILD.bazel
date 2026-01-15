@@ -1,0 +1,110 @@
+# Comprehensive test example demonstrating all rules_moonbit features
+
+load("//moonbit:defs.bzl", 
+     "moonbit_library", 
+     "moonbit_binary",
+     "moonbit_test",
+     "moonbit_wasm",
+     "moonbit_js",
+     "moonbit_c",
+     "moonbit_component",
+     "moonbit_package")
+
+# 1. Basic library with all advanced features
+moonbit_library(
+    name = "comprehensive_lib",
+    srcs = ["lib.mbt"],
+    target_platform = "native",
+    incremental = True,
+    optimization = "release",
+    caching = True,
+    cache_strategy = "content_addressable",
+)
+
+# 2. Binary with cross-compilation
+moonbit_binary(
+    name = "linux_binary",
+    srcs = ["main.mbt"],
+    deps = [":comprehensive_lib"],
+    target_platform = "linux_x86_64",
+    optimization = "aggressive",
+    caching = True,
+)
+
+# 3. WebAssembly compilation
+moonbit_wasm(
+    name = "wasm_output",
+    srcs = ["wasm_example.mbt"],
+    deps = [":comprehensive_lib"],
+    is_main = True,
+)
+
+# 4. JavaScript compilation
+moonbit_js(
+    name = "js_output",
+    srcs = ["js_example.mbt"],
+    deps = [":comprehensive_lib"],
+)
+
+# 5. C compilation
+moonbit_c(
+    name = "c_output",
+    srcs = ["c_example.mbt"],
+    deps = [":comprehensive_lib"],
+)
+
+# 6. WebAssembly Component Model
+moonbit_component(
+    name = "math_component",
+    srcs = ["component_example.mbt"],
+    wit_deps = [":component_wit"],
+    deps = [":comprehensive_lib"],
+    target_platform = "wasm",
+    optimization = "release",
+)
+
+# 7. Test rule
+moonbit_test(
+    name = "comprehensive_test",
+    srcs = ["test_example.mbt"],
+    deps = [":comprehensive_lib"],
+)
+
+# 8. Package management (placeholder - would integrate with actual registry)
+moonbit_package(
+    name = "test_dependencies",
+    packages = [],  # Would be ["@moonbit_registry//:math", "@moonbit_registry//:collections"]
+    features = ["test_utilities"],
+    platform = "any",
+)
+
+# 9. Multi-platform build example
+moonbit_binary(
+    name = "windows_binary",
+    srcs = ["main.mbt"],
+    deps = [":comprehensive_lib"],
+    target_platform = "windows_amd64",
+    optimization = "release",
+)
+
+# 10. Debug build example
+moonbit_binary(
+    name = "debug_binary",
+    srcs = ["main.mbt"],
+    deps = [":comprehensive_lib"],
+    optimization = "debug",
+    incremental = True,
+    caching = False,  # Disable caching for debug builds
+)
+
+# Note: This comprehensive example demonstrates all the features implemented in rules_moonbit:
+# - Basic library and binary compilation
+# - Cross-compilation for different platforms
+# - Multi-target support (WASM, JS, C)
+# - WebAssembly Component Model with WIT interfaces
+# - Testing framework
+# - Package management foundation
+# - Optimization levels (debug, release, aggressive)
+# - Incremental compilation
+# - Caching strategies
+# - Platform-specific builds

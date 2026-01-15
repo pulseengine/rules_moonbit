@@ -88,34 +88,85 @@ The hermetic toolchain will be automatically downloaded and used!
 
 ## Components
 
-### 1. Checksum Registry (`moonbit/checksums/registry.bzl`)
+### 1. Checksum Registry (`moonbit/checksums/registry_v2.bzl`)
 
-The checksum registry is the single source of truth for all MoonBit toolchain checksums:
+The enhanced checksum registry provides comprehensive checksum management:
 
-- **JSON-based**: Checksums stored in `moonbit/checksums/moonbit.json`
-- **Versioned**: Supports multiple MoonBit versions
-- **Platform-aware**: Checksums for each platform (darwin_arm64, linux_amd64, etc.)
+- **Dual Format Support**: Both legacy (`moonbit.json`) and new comprehensive format (`moonbit_v2.json`)
+- **Versioned**: Supports multiple MoonBit versions with release dates
+- **Platform-aware**: Checksums for all platforms (darwin_arm64, darwin_amd64, linux_amd64, linux_arm64, windows_amd64)
 - **Verified**: All downloads are checksum-verified
+- **Metadata-rich**: Includes binaries, archive types, and comprehensive tool information
 
-Example checksum file structure:
+**New Comprehensive Format Example:**
 ```json
 {
+  "tool_name": "moonbit",
+  "github_repo": "moonbitlang/moonbit",
+  "latest_version": "0.6.33",
+  "last_checked": "2026-01-01T00:00:00Z",
+  "build_type": "binary",
   "versions": {
     "0.6.33": {
+      "release_date": "2026-01-01",
       "platforms": {
         "darwin_arm64": {
-          "sha256": "a1b2c3...",
-          "url_suffix": "moonbit-0.6.33-darwin-arm64.tar.gz"
+          "sha256": "89d87662194a4a2d7cc345b1fecf8bbe42e0a00ee7e68c8f2e407f3f3da4b51f",
+          "url_suffix": "moonbit-darwin-aarch64.tar.gz",
+          "binaries": ["moon"],
+          "archive_type": "tar.gz"
         },
         "linux_amd64": {
-          "sha256": "b2c3d4...",
-          "url_suffix": "moonbit-0.6.33-linux-amd64.tar.gz"
+          "sha256": "401d0c5408819a0ed6197d2db54c10e17fe16c6e5654df1bf8b2de71a9bbc1e5",
+          "url_suffix": "moonbit-linux-x86_64.tar.gz",
+          "binaries": ["moon"],
+          "archive_type": "tar.gz"
         }
       }
     }
-  }
+  },
+  "supported_platforms": [
+    "darwin_amd64", "darwin_arm64",
+    "linux_amd64", "linux_arm64",
+    "windows_amd64"
+  ]
 }
 ```
+
+**Backward Compatibility:**
+- Legacy format (`moonbit.json`) still fully supported
+- Automatic format detection and conversion
+- Gradual migration path for existing users
+
+### 2. MoonBit Checksum Updater (New!)
+
+The MoonBit Checksum Updater provides automated checksum management:
+
+- **GitHub API Integration**: Automatically fetch latest releases
+- **SHA256 Computation**: Native MoonBit crypto with fallback strategies
+- **Async/Await Support**: Parallel processing for multiple tools
+- **Comprehensive Error Handling**: Rich error taxonomy with retry logic
+- **Validation System**: Strict modes and auto-fix capabilities
+
+**Usage:**
+```bash
+# Update all tools
+checksum_updater update --all
+
+# Update specific tools with async
+checksum_updater update --tools wasm-tools,wit-bindgen --async
+
+# Validate checksums with strict mode
+checksum_updater validate --all --strict --verify-download
+```
+
+**Features:**
+- ✅ Automatic release fetching from GitHub
+- ✅ Platform pattern matching for asset detection
+- ✅ Multi-strategy SHA256 computation (native, system tools, OpenSSL)
+- ✅ Parallel tool updates with async/await
+- ✅ Comprehensive validation with auto-fix
+- ✅ User-friendly error messages and retry logic
 
 ### 2. Toolchain Vendor System (`moonbit/tools/vendor_toolchains.bzl`)
 

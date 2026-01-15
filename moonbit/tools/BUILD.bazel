@@ -6,3 +6,18 @@ package(default_visibility = ["//visibility:public"])
 exports_files([
     "vendor_toolchains.bzl",
 ])
+
+# Define the MoonBit toolchain using the hermetic implementation
+load("//moonbit/private:toolchain.bzl", "moonbit_toolchain")
+
+moonbit_toolchain(
+    name = "moonbit_toolchain_impl",
+    version = "0.6.33",
+)
+
+# Register the toolchain for Bazel toolchain resolution
+toolchain(
+    name = "moonbit_toolchain",
+    toolchain = ":moonbit_toolchain_impl",
+    toolchain_type = "//moonbit:moonbit_toolchain_type",
+)

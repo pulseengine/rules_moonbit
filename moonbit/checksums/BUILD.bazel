@@ -2,12 +2,21 @@
 
 package(default_visibility = ["//visibility:public"])
 
-# Export checksum JSON files
+# Export checksum JSON files (both legacy and new formats)
 exports_files([
-    "moonbit.json",
+    "moonbit.json",      # Legacy format (backward compatibility)
+    "moonbit_v2.json",   # New comprehensive format
 ])
 
-# Export registry API
+# Export registry API (both legacy and enhanced versions)
 exports_files([
-    "registry.bzl",
+    "registry.bzl",      # Legacy registry
+    "registry_v2.bzl",   # Enhanced registry with new features
 ])
+
+# Integration tests
+load(":checksum_integration_test.bzl", "checksum_integration_test")
+
+checksum_integration_test(
+    name = "checksum_integration_test",
+)

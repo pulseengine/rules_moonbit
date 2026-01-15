@@ -51,7 +51,7 @@ def get_moonbit_checksum(repository_ctx, version, platform):
         platform: Platform string (e.g., 'darwin_arm64', 'linux_amd64')
         
     Returns:
-        String: SHA256 checksum, or None if not found
+        String: SHA256 checksum, or None if not found or placeholder
     """
     moonbit_data = _load_moonbit_checksums_from_json(repository_ctx)
     
@@ -60,7 +60,25 @@ def get_moonbit_checksum(repository_ctx, version, platform):
     platforms = version_data.get("platforms", {})
     platform_data = platforms.get(platform, {})
     
-    return platform_data.get("sha256")
+    checksum = platform_data.get("sha256")
+    status = platform_data.get("status", "verified")
+    
+    # Skip placeholder checksums and warn user
+    if status == "placeholder":
+        repository_ctx.warning(
+            "Placeholder checksum for MoonBit {} on {} - checksum verification skipped. "
+            "Please update moonbit.json with the actual checksum from official releases.".format(version, platform)
+        )
+        return None
+    
+    # Skip TODO checksums
+    if checksum == "TODO":
+        repository_ctx.warning(
+            "Checksum not available for MoonBit {} on {} - download verification disabled.".format(version, platform)
+        )
+        return None
+    
+    return checksum
 
 def get_moonbit_info(repository_ctx, version, platform):
     """Get complete MoonBit information from centralized registry

@@ -1,0 +1,61 @@
+{
+  "tool_name": "moonbit",
+  "github_repo": "moonbitlang/moonbit",
+  "latest_version": "0.6.33",
+  "last_checked": "2026-01-11T20:07:06.714462Z",
+  "build_type": "binary",
+  "versions": {
+    "0.6.33": {
+      "release_date": "2026-01-01",
+      "platforms": {
+        "darwin_arm64": {
+          "sha256": "89d87662194a4a2d7cc345b1fecf8bbe42e0a00ee7e68c8f2e407f3f3da4b51f",
+          "url_suffix": "moonbit-darwin-aarch64.tar.gz",
+          "binaries": [
+            "moon"
+          ],
+          "archive_type": "tar.gz"
+        },
+        "darwin_amd64": {
+          "sha256": "TODO",
+          "url_suffix": "moonbit-darwin-x86_64.tar.gz",
+          "binaries": [
+            "moon"
+          ],
+          "archive_type": "tar.gz"
+        },
+        "linux_amd64": {
+          "sha256": "401d0c5408819a0ed6197d2db54c10e17fe16c6e5654df1bf8b2de71a9bbc1e5",
+          "url_suffix": "moonbit-linux-x86_64.tar.gz",
+          "binaries": [
+            "moon"
+          ],
+          "archive_type": "tar.gz"
+        },
+        "linux_arm64": {
+          "sha256": "TODO",
+          "url_suffix": "moonbit-linux-arm64.tar.gz",
+          "binaries": [
+            "moon"
+          ],
+          "archive_type": "tar.gz"
+        },
+        "windows_amd64": {
+          "sha256": "TODO",
+          "url_suffix": "moonbit-windows-x86_64.zip",
+          "binaries": [
+            "moon.exe"
+          ],
+          "archive_type": "zip"
+        }
+      }
+    }
+  },
+  "supported_platforms": [
+    "darwin_amd64",
+    "darwin_arm64",
+    "linux_amd64",
+    "linux_arm64",
+    "windows_amd64"
+  ]
+}

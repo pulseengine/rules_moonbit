@@ -2,6 +2,11 @@
 
 package(default_visibility = ["//visibility:public"])
 
+# Define MoonBit toolchain type for proper toolchain resolution
+moonbit_toolchain_type = toolchain_type(
+    name = "moonbit_toolchain_type",
+)
+
 exports_files([
     "defs.bzl",
     "providers.bzl",

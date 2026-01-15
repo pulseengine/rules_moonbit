@@ -14,11 +14,36 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("//moonbit/checksums:registry.bzl", 
-     "get_moonbit_checksum", 
-     "get_moonbit_info", 
-     "get_github_repo",
-     "get_latest_moonbit_version")
+# Try to use enhanced registry first, fall back to legacy
+try:
+    load("//moonbit/checksums:registry_v2.bzl", 
+         "get_moonbit_checksum_v2", 
+         "get_moonbit_info_v2", 
+         "get_github_repo_v2",
+         "get_latest_moonbit_version_v2")
+    
+    # Alias enhanced functions as primary
+    get_moonbit_checksum = get_moonbit_checksum_v2
+    get_moonbit_info = get_moonbit_info_v2
+    get_github_repo = get_github_repo_v2
+    get_latest_moonbit_version = get_latest_moonbit_version_v2
+    
+    # Enable new checksum updater features
+    USE_NEW_CHECKSUM_UPDATER = True
+except:
+    # Fall back to legacy registry
+    load("//moonbit/checksums:registry.bzl", 
+         "get_moonbit_checksum", 
+         "get_moonbit_info", 
+         "get_github_repo",
+         "get_latest_moonbit_version")
+    
+    # Legacy mode
+    USE_NEW_CHECKSUM_UPDATER = False
+
+# Configuration option for new checksum updater
+# Set to True to enable enhanced features when available
+USE_NEW_CHECKSUM_UPDATER = False
 
 def _construct_moonbit_download_url(version, platform, tool_info):
     """Build download URL for MoonBit tool"""

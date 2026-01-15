@@ -2,6 +2,9 @@
 
 package(default_visibility = ["//visibility:public"])
 
+# Load the moonbit_toolchain rule
+load("//moonbit/private:toolchain.bzl", "moonbit_toolchain")
+
 # Define the MoonBit toolchain target
 moonbit_toolchain(
     name = "moonbit_toolchain",
@@ -12,11 +15,5 @@ moonbit_toolchain(
 toolchain(
     name = "moonbit_toolchain_type",
     toolchain = ":moonbit_toolchain",
-    toolchain_type = "@rules_moonbit//moonbit:moonbit_toolchain_type",
-    exec_compatible_with = [
-        "@platforms//host:host",
-    ],
-    target_compatible_with = [
-        "@platforms//host:host",
-    ],
+    toolchain_type = "//moonbit:moonbit_toolchain_type",
 )
