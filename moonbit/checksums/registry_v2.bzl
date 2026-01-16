@@ -72,7 +72,7 @@ def get_github_repo_v2():
     Returns:
         String: GitHub repository in 'owner/repo' format
     """
-    return "moonbitlang/moonbit"
+    return "moonbitlang/moon"
 
 def get_tool_metadata(repository_ctx):
     """Get comprehensive tool metadata

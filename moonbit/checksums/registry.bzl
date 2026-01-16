@@ -123,4 +123,4 @@ def get_github_repo():
     Returns:
         String: GitHub repository path
     """
-    return "moonbitlang/moonbit"
+    return "moonbitlang/moon"
