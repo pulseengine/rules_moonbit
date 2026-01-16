@@ -106,14 +106,6 @@ moonbit_library = rule(
             doc = "Cache strategy (content_addressable, timestamp, none)",
             default = "content_addressable",
         ),
-        "caching": attr.bool(
-            doc = "Enable compilation caching for faster rebuilds",
-            default = True,
-        ),
-        "cache_strategy": attr.string(
-            doc = "Cache strategy (content_addressable, timestamp, none)",
-            default = "content_addressable",
-        ),
     },
     toolchains = ["//moonbit:moonbit_toolchain_type"],
 )

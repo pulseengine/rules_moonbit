@@ -67,8 +67,11 @@ load("//moonbit/private:package_utils.bzl",
 
 # Load toolchain implementation
 load("//moonbit/private:toolchain.bzl", 
-     _moonbit_toolchain = "moonbit_toolchain", 
-     _moonbit_register_toolchains = "moonbit_register_toolchains")
+      _moonbit_toolchain = "moonbit_toolchain")
+
+# Load hermetic toolchain implementation
+load("//moonbit/tools:hermetic_toolchain.bzl", 
+      _moonbit_register_hermetic_toolchain = "moonbit_register_hermetic_toolchain")
 
 # Load providers for public use
 load("//moonbit:providers.bzl", 
@@ -91,4 +94,4 @@ moonbit_package = _moonbit_package
 
 # Re-export toolchain functions
 moonbit_toolchain = _moonbit_toolchain
-moonbit_register_toolchains = _moonbit_register_toolchains
+moonbit_register_hermetic_toolchain = _moonbit_register_hermetic_toolchain

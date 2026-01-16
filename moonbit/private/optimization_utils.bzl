@@ -5,6 +5,32 @@ including LTO, dead code elimination, inlining control, and target-specific
 optimizations.
 """
 
+def get_c_optimization_flags(optimization_level):
+    """Get C-specific optimization flags."""
+    flags = ["-Wall", "-Wextra"]
+    
+    if optimization_level == "debug":
+        flags.extend(["-O0", "-g", "-DDEBUG"])
+    elif optimization_level == "release":
+        flags.extend(["-O2", "-DNDEBUG"])
+    elif optimization_level == "aggressive":
+        flags.extend(["-O3", "-DNDEBUG", "-flto", "-funroll-loops"])
+    
+    return flags
+
+def get_native_optimization_flags(optimization_level):
+    """Get native-specific optimization flags."""
+    flags = ["-Wall", "-Wextra"]
+    
+    if optimization_level == "debug":
+        flags.extend(["-O0", "-g", "-DDEBUG"])
+    elif optimization_level == "release":
+        flags.extend(["-O2", "-DNDEBUG"])
+    elif optimization_level == "aggressive":
+        flags.extend(["-O3", "-DNDEBUG", "-flto", "-funroll-loops", "-march=native"])
+    
+    return flags
+
 def generate_optimization_config(ctx, target, optimization_level="release"):
     """Generate optimization configuration for MoonBit compilation.
     
@@ -65,7 +91,10 @@ def generate_optimization_config(ctx, target, optimization_level="release"):
     }
     
     # Merge configurations
-    config = {**base_config, **target_configs.get(target, {})}
+    config = base_config
+    target_specific = target_configs.get(target, {})
+    for key, value in target_specific.items():
+        config[key] = value
     
     # Add optimization level-specific settings
     if optimization_level == "debug":
@@ -83,32 +112,6 @@ def generate_optimization_config(ctx, target, optimization_level="release"):
         config["aggressive_optimizations"] = True
     
     return config
-
-def get_c_optimization_flags(optimization_level):
-    """Get C-specific optimization flags."""
-    flags = ["-Wall", "-Wextra"]
-    
-    if optimization_level == "debug":
-        flags.extend(["-O0", "-g", "-DDEBUG"])
-    elif optimization_level == "release":
-        flags.extend(["-O2", "-DNDEBUG"])
-    elif optimization_level == "aggressive":
-        flags.extend(["-O3", "-DNDEBUG", "-flto", "-funroll-loops"])
-    
-    return flags
-
-def get_native_optimization_flags(optimization_level):
-    """Get native-specific optimization flags."""
-    flags = ["-Wall", "-Wextra"]
-    
-    if optimization_level == "debug":
-        flags.extend(["-O0", "-g", "-DDEBUG"])
-    elif optimization_level == "release":
-        flags.extend(["-O2", "-DNDEBUG"])
-    elif optimization_level == "aggressive":
-        flags.extend(["-O3", "-DNDEBUG", "-flto", "-funroll-loops", "-march=native"])
-    
-    return flags
 
 def create_optimized_compilation_action(ctx, target, optimization_config):
     """Create optimized compilation action with MoonBit-specific optimizations."""

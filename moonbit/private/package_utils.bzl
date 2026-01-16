@@ -209,6 +209,9 @@ def _moonbit_package_impl(ctx):
     # Get package dependencies
     packages = ctx.attr.packages
     
+    # Get package features (renamed to avoid conflict with Bazel built-in)
+    pkg_features = ctx.attr.pkg_features
+    
     # Generate package configuration
     package_config = generate_package_config(ctx, packages)
     
@@ -222,6 +225,7 @@ def _moonbit_package_impl(ctx):
     package_metadata = {
         "package_name": ctx.label.name,
         "dependencies": [pkg["name"] for pkg in packages],
+        "features": pkg_features,  # Use the renamed attribute
         "resolution": resolution_result,
         "cache": cache_config,
         "registry": package_config["registry"],
@@ -273,7 +277,7 @@ moonbit_package = rule(
             doc = "Dependency resolution strategy (latest_compatible, minimum_versions, etc.)",
             default = "latest_compatible",
         ),
-        "features": attr.string_list(
+        "pkg_features": attr.string_list(
             doc = "Features to enable for packages",
             default = [],
         ),

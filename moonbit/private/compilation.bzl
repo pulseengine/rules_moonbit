@@ -16,7 +16,7 @@
 
 load("//moonbit:providers.bzl", "MoonbitInfo")
 load("//moonbit/private:optimization_utils.bzl", "generate_optimization_config")
-load("//moonbit/private:diagnostics.bzl", "create_compilation_diagnostics")
+# load("//moonbit/private:diagnostics.bzl", "create_compilation_diagnostics")
 
 def find_moon_executable(ctx):
     """Find MoonBit executable using multiple discovery strategies.
@@ -39,7 +39,7 @@ def find_moon_executable(ctx):
             return toolchain.moon_executable
     
     # Strategy 2: Try system PATH
-    try:
+    if hasattr(ctx, 'which'):
         moon_path = ctx.which("moon")
         if moon_path:
             ctx.actions.write(
@@ -48,8 +48,6 @@ def find_moon_executable(ctx):
                 is_executable = False
             )
             return moon_path
-    except:
-        pass
     
     # Strategy 3: Try common installation locations
     common_locations = [
@@ -62,33 +60,29 @@ def find_moon_executable(ctx):
     ]
     
     for location in common_locations:
-        try:
+        if hasattr(ctx, 'path'):
             expanded_path = ctx.path(location)
-            if expanded_path.exists:
+            if hasattr(expanded_path, 'exists') and expanded_path.exists:
                 ctx.actions.write(
                     output = ctx.actions.declare_file("moon_executable_source.txt"),
                     content = "Using MoonBit from common location: {}".format(expanded_path.path),
                     is_executable = False
                 )
                 return expanded_path
-        except:
-            continue
     
     # Strategy 4: Try environment variables
-    try:
+    if hasattr(ctx, 'getenv'):
         # Check MOONBIT_HOME environment variable
         moonbit_home = ctx.getenv("MOONBIT_HOME")
         if moonbit_home:
             moon_executable = ctx.path("{}/bin/moon".format(moonbit_home))
-            if moon_executable.exists:
+            if hasattr(moon_executable, 'exists') and moon_executable.exists:
                 ctx.actions.write(
                     output = ctx.actions.declare_file("moon_executable_source.txt"),
                     content = "Using MoonBit from MOONBIT_HOME: {}".format(moon_executable.path),
                     is_executable = False
                 )
                 return moon_executable
-    except:
-        pass
     
     # If no MoonBit found, create helpful error with setup instructions
     ctx.actions.write(
@@ -232,7 +226,7 @@ def create_compilation_action(ctx, output_file, srcs, target="wasm", incremental
         target = target
     )
     
-    create_compilation_diagnostics(ctx, moonbit_info, compilation_result)
+    # create_compilation_diagnostics(ctx, moonbit_info, compilation_result)
     
     return output_file
 

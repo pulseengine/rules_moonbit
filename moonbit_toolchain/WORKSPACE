@@ -1,0 +1,2 @@
+# WORKSPACE file for test MoonBit toolchain
+workspace(name = "moonbit_toolchain")

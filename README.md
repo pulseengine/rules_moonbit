@@ -10,25 +10,63 @@ This project is in the early development phase. The goal is to create Bazel rule
 
 ### Prerequisites
 
-- Bazel (latest version)
-- MoonBit toolchain installed (or use hermetic toolchain)
-- Basic understanding of Bazel and MoonBit
+- Bazel 8.5+ (required for modern toolchain support)
+- Basic understanding of Bazel
 
-### Quick Start
+### Quick Start (Development Setup)
 
-1. Add rules_moonbit to your WORKSPACE:
+Since the MoonBit compiler is not yet publicly available for hermetic download, here's how to set up for development:
+
+#### Option 1: Using Test Toolchain (Recommended)
 
 ```python
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+# In your WORKSPACE file:
 
-http_archive(
+# First, get rules_moonbit (local development)
+local_repository(
     name = "rules_moonbit",
-    urls = ["https://github.com/your-repo/rules_moonbit/releases/download/v0.1.0/rules_moonbit-v0.1.0.tar.gz"],
-    sha256 = "...",
+    path = "/path/to/rules_moonbit",
 )
 
-load("@rules_moonbit//moonbit:defs.bzl", "moonbit_register_toolchains")
-moonbit_register_toolchains()
+# Use the test toolchain
+local_repository(
+    name = "moonbit_toolchain",
+    path = "moonbit_toolchain",
+)
+
+# Register the toolchain
+register_toolchains("@moonbit_toolchain//:moonbit_toolchain")
+```
+
+#### Option 2: Using Bzlmod (Modern Bazel)
+
+```python
+# In your MODULE.bazel file:
+
+bazel_dep(name = "rules_moonbit", version = "0.1.0")
+
+# For now, use local toolchain until hermetic downloads work
+local_repository(
+    name = "moonbit_toolchain",
+    path = "moonbit_toolchain",
+)
+
+register_toolchains("@moonbit_toolchain//:moonbit_toolchain")
+```
+
+#### Option 3: When Hermetic Downloads Become Available
+
+```python
+# In your WORKSPACE file:
+
+load("@rules_moonbit//moonbit/tools:hermetic_toolchain.bzl", "moonbit_toolchain_repository")
+
+moonbit_toolchain_repository(
+    name = "moonbit_toolchain",
+    version = "0.6.33",  # or latest version
+)
+
+register_toolchains("@moonbit_toolchain//:moonbit_toolchain")
 ```
 
 2. Create a BUILD file:

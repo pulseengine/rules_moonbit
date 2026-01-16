@@ -7,11 +7,11 @@ bazel_dep(name = "bazel_skylib", version = "1.5.0")
 # Register MoonBit toolchain for automatic toolchain resolution
 moonbit_toolchain = use_extension(
     "//moonbit:extensions.bzl",
-    "moonbit_toolchain",
+    "moonbit_toolchain_extension",
 )
-use_repo(moonbit_toolchain, "moonbit_toolchain")
+use_repo(moonbit_toolchain)
 
 # Register the MoonBit toolchain for Bazel toolchain resolution
-register_toolchains("//moonbit/toolchain:moonbit_toolchain_type")
+register_toolchains("@moonbit_toolchain//:moonbit_toolchain")
 
 

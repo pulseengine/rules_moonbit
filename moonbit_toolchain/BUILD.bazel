@@ -1,0 +1,13 @@
+# BUILD file for test MoonBit toolchain
+
+package(default_visibility = ["//visibility:public"])
+
+# Export the moon executable
+exports_files(["moon"])
+
+# Create a simple toolchain target that provides the necessary files
+filegroup(
+    name = "moonbit_toolchain",
+    srcs = ["moon"],
+    output_group = "toolchain_files",
+)
