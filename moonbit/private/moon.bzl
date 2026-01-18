@@ -30,13 +30,10 @@ def _moonbit_library_impl(ctx):
     """Implements the moonbit_library rule."""
     # Get sources
     srcs = ctx.files.srcs
-    
+
     # Determine output file
     output_file = ctx.actions.declare_file("%s.compiled" % ctx.label.name)
-    
-    # Get component name
-    component_name = ctx.attr.component_name or ""
-    
+
     # Get target platform for cross-compilation
     target_platform = ctx.attr.target_platform
     
@@ -407,7 +404,8 @@ def _moonbit_component_impl(ctx):
     cache_strategy = ctx.attr.cache_strategy
     
     # Build MoonBit compilation command
-    args = [moon_executable.path, "build", "--target", "wasm"]
+    # Don't include executable in args - ctx.actions.run handles that
+    args = ["build", "--target", "wasm"]
     
     # Add target platform if specified for cross-compilation
     if target_platform:

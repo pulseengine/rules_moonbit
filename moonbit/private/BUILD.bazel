@@ -1,6 +1,21 @@
 # BUILD file for private implementation
 
-package(default_visibility = ["//visibility:private"])
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+
+package(default_visibility = ["//moonbit:__subpackages__"])
+
+bzl_library(
+    name = "moonbit_library",
+    srcs = ["moon.bzl"],
+    deps = [
+        ":toolchain",
+    ],
+)
+
+bzl_library(
+    name = "toolchain",
+    srcs = ["toolchain.bzl"],
+)
 
 exports_files([
     "moon.bzl",
