@@ -1,4 +1,7 @@
-"""MoonBit Bzlmod extensions"""
+"""MoonBit Bzlmod extensions.
+
+This module provides Bzlmod extensions for setting up hermetic MoonBit toolchains.
+"""
 
 # Copyright 2026 The Rules_Moonbit Authors. All rights reserved.
 #
@@ -14,34 +17,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("//moonbit/tools:hermetic_toolchain.bzl", "moonbit_register_hermetic_toolchain")
-
-"""MoonBit Bzlmod extension for hermetic toolchain setup.
-
-This extension provides a way to set up hermetic MoonBit toolchains
-using Bzlmod's use_extension mechanism.
-"""
-
-"""MoonBit Bzlmod extensions
-
-This provides module extensions for MoonBit toolchain setup.
-"""
-
-load("//moonbit/tools:hermetic_toolchain.bzl", "moonbit_register_hermetic_toolchain")
+load(
+    "//moonbit/tools:hermetic_toolchain.bzl",
+    "moonbit_register_hermetic_toolchain",
+    "moonbit_toolchain_repository",
+)
 
 def _moonbit_toolchain_extension_impl(module_ctx):
     """MoonBit toolchain extension implementation.
-    
+
     Args:
         module_ctx: Module extension context
-        
+
     Returns:
         Extension metadata
     """
     # Create the hermetic toolchain repository directly
+    # Use empty string to use the default version from hermetic_toolchain.bzl
     moonbit_toolchain_repository(
         name = "moonbit_toolchain",
-        version = "latest",
+        version = "",  # Uses default 0.6.33 from hermetic_toolchain.bzl
     )
     
     return module_ctx.extension_metadata(

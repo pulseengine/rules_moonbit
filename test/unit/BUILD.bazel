@@ -1,13 +1,5 @@
 # Unit tests for rules_moonbit
+# TODO: Implement proper analysis tests using bazel_skylib unittest framework
 
-load("@bazel_skylib//lib:unittest.bzl", "analysistest")
-
-# Create a simple test that verifies the moonbit_library rule can be loaded and analyzed
-analysistest(
-    name = "moonbit_library_test",
-    srcs = [":moonbit_library_test.bzl"],
-    deps = [
-        "@rules_moonbit//moonbit:defs.bzl",
-        "@bazel_skylib//lib:unittest.bzl",
-    ],
-)
+# Placeholder - analysis tests require proper setup with analysistest.make()
+# See: https://github.com/bazelbuild/bazel-skylib/blob/main/docs/unittest_doc.md

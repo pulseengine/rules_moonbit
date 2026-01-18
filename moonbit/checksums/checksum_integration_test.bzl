@@ -14,8 +14,9 @@
 
 """Integration tests for MoonBit Checksum Updater"""
 
-load("@bazel_skylib//lib:unittest.bzl", "analysistest", "asserts")
+load("@bazel_skylib//lib:unittest.bzl", "analysistest")
 load(":registry_v2.bzl", "get_moonbit_checksum_v2", "get_moonbit_info_v2", "get_latest_moonbit_version_v2", "get_tool_metadata")
+load(":registry.bzl", "get_moonbit_checksum")
 
 def _mock_repository_ctx():
     """Create a mock repository context for testing"""
@@ -26,7 +27,7 @@ def _mock_repository_ctx():
         )
     )
 
-def test_checksum_registry_integration():
+def test_checksum_registry_integration(env):
     """Test that the enhanced checksum registry integrates correctly"""
     
     # Test basic functionality
@@ -34,48 +35,51 @@ def test_checksum_registry_integration():
     
     # Test getting latest version
     latest_version = get_latest_moonbit_version_v2(ctx)
-    asserts.equals("0.6.33", latest_version)
+    analysistest.assert_equals(env, latest_version, "0.6.33")
     
     # Test getting checksum
     checksum = get_moonbit_checksum_v2(ctx, "0.6.33", "darwin_arm64")
-    asserts.equals("test_hash", checksum)
+    analysistest.assert_equals(env, checksum, "test_hash")
     
     # Test getting tool info
     tool_info = get_moonbit_info_v2(ctx, "0.6.33", "darwin_arm64")
-    asserts.equals("test_hash", tool_info.sha256)
-    asserts.equals("test.tar.gz", tool_info.url_suffix)
+    analysistest.assert_equals(env, tool_info.sha256, "test_hash")
+    analysistest.assert_equals(env, tool_info.url_suffix, "test.tar.gz")
     
     # Test getting tool metadata
     metadata = get_tool_metadata(ctx)
-    asserts.equals("moonbit", metadata.tool_name)
-    asserts.equals("moonbitlang/moonbit", metadata.github_repo)
+    analysistest.assert_equals(env, metadata.tool_name, "moonbit")
+    analysistest.assert_equals(env, metadata.github_repo, "moonbitlang/moonbit")
 
-def test_backward_compatibility():
+def test_backward_compatibility(env):
     """Test that legacy format still works"""
-    
-    # Test that we can still load legacy functions
-    load(":registry.bzl", "get_moonbit_checksum")
-    
-    # If we get here, the legacy registry loaded successfully
-    asserts.equals(True, True)
 
-def test_json_format_compatibility():
+    # Test that we can still load legacy functions
+    # This is a simple test that just verifies the legacy registry can be loaded
+    # The actual loading is done in the test setup
+    # We use a mock context that returns our test data
+    mock_ctx = _mock_repository_ctx()
+    legacy_checksum = get_moonbit_checksum(mock_ctx, "0.6.33", "darwin_arm64")
+    analysistest.assert_equals(env, legacy_checksum, "test_hash")
+
+def test_json_format_compatibility(env):
     """Test that both JSON formats are accessible"""
     
     # Test that both JSON files exist in the package
     # This is verified by the BUILD.bazel exports_files
-    asserts.equals(True, True)
+    analysistest.assert_true(env, True)
 
-# Integration test rule
-def checksum_integration_test(name):
-    """Run checksum updater integration tests"""
-    analysistest(
-        name = name,
-        srcs = [__file__],
-        deps = [
-            "@bazel_skylib//lib:unittest.bzl",
-            ":registry_v2.bzl",
-            ":registry.bzl",
-        ],
-        tags = ["integration-test"],
-    )
+# Integration test implementation
+def _checksum_integration_test_impl(ctx):
+    """Implementation function for checksum integration tests"""
+    env = analysistest.begin(ctx)
+    
+    # Run all test functions
+    test_checksum_registry_integration(env)
+    test_backward_compatibility(env)
+    test_json_format_compatibility(env)
+    
+    return analysistest.end(env)
+
+# Create the actual test rule
+checksum_integration_test = analysistest.make(_checksum_integration_test_impl)
