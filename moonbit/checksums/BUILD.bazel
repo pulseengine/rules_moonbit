@@ -15,8 +15,12 @@ exports_files([
 ])
 
 # Integration tests
-load(":checksum_integration_test.bzl", "checksum_integration_test")
-
-checksum_integration_test(
+sh_test(
     name = "checksum_integration_test",
+    srcs = [":checksum_integration_test.sh"],
+    data = [
+        ":registry.bzl",
+        ":registry_v2.bzl",
+        ":moonbit.json",
+    ],
 )

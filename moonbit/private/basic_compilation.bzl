@@ -21,8 +21,8 @@ def create_basic_compilation_action(ctx, output_file, srcs):
         )
         return output_file
     
-    # Simple compilation command
-    args = [moon_executable.path, "build", "--output", output_file.path]
+    # Simple compilation command - don't include executable in args
+    args = ["build", "--output", output_file.path]
     
     # Add source files
     for src in srcs:

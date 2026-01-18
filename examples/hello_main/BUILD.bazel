@@ -1,0 +1,7 @@
+load("//moonbit:defs.bzl", "moonbit_wasm")
+
+moonbit_wasm(
+    name = "hello",
+    srcs = ["main.mbt"],
+    is_main = True,
+)

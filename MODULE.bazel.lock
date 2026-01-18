@@ -136,6 +136,38 @@
   },
   "selectedYankedVersions": {},
   "moduleExtensions": {
+    "//moonbit:extensions.bzl%moonbit_toolchain_extension": {
+      "general": {
+        "bzlTransitiveDigest": "0YmjVuX6hs4mlhtFBWSckmkaw00zHzrmB32kRBDoPZk=",
+        "usagesDigest": "4jMnh6HTFc/gkIqJcJnvdkbp1b4rYJREMBvClutmSaA=",
+        "recordedFileInputs": {},
+        "recordedDirentsInputs": {},
+        "envVariables": {},
+        "generatedRepoSpecs": {
+          "moonbit_toolchain": {
+            "repoRuleId": "@@//moonbit/tools:hermetic_toolchain.bzl%moonbit_toolchain_repository",
+            "attributes": {
+              "version": ""
+            }
+          }
+        },
+        "moduleExtensionMetadata": {
+          "explicitRootModuleDirectDeps": [
+            "moonbit_toolchain"
+          ],
+          "explicitRootModuleDirectDevDeps": [],
+          "useAllRepos": "NO",
+          "reproducible": false
+        },
+        "recordedRepoMappingEntries": [
+          [
+            "",
+            "bazel_tools",
+            "bazel_tools"
+          ]
+        ]
+      }
+    },
     "@@rules_kotlin+//src/main/starlark/core/repositories:bzlmod_setup.bzl%rules_kotlin_extensions": {
       "general": {
         "bzlTransitiveDigest": "rL/34P1aFDq2GqVC2zCFgQ8nTuOC6ziogocpvG50Qz8=",

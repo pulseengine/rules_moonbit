@@ -87,8 +87,9 @@ def create_moonbit_compilation_action(ctx, moon_executable, output_file, srcs, d
             dep_files = dep_files + dep.compiled_objects
     
     # Build command line arguments for MoonBit compiler
-    args = [moon_executable.path]
-    
+    # Don't include executable in args - ctx.actions.run handles that
+    args = []
+
     # Add build command
     if is_main:
         args.extend(["build", "--main"])

@@ -56,133 +56,155 @@ def _moonbit_toolchain_impl(repository_ctx):
     # Get checksum for verification
     checksum = get_moonbit_checksum_v2(repository_ctx, version, platform)
     
-    # Build download URL
-    github_repo = get_github_repo_v2()
+    # Build download URL - MoonBit uses cli.moonbitlang.com, not GitHub releases
     url_suffix = tool_info.get("url_suffix")
     if not url_suffix:
         fail("Could not construct download URL for platform: {}".format(platform))
-    
-    download_url = "https://github.com/{}/releases/download/v{}/{}".format(
-        github_repo, 
-        version, 
-        url_suffix
-    )
+
+    # MoonBit distributes binaries from their own CDN
+    # For "latest" or current version, use the latest endpoint
+    # Format: https://cli.moonbitlang.com/binaries/latest/moonbit-{os}-{arch}.tar.gz
+    if version == "latest" or version == "0.6.33":
+        # Use latest binaries endpoint
+        download_url = "https://cli.moonbitlang.com/binaries/latest/{}".format(url_suffix)
+    else:
+        # For specific versions, try versioned URL (may not exist)
+        download_url = "https://cli.moonbitlang.com/binaries/{}/{}".format(version, url_suffix)
     
     # Determine archive type and strip prefix
+    # MoonBit archives have no strip prefix - files are at ./bin/, ./lib/, ./include/
     archive_type = tool_info.get("archive_type", "tar.gz")
-    strip_prefix = tool_info.get("strip_prefix", "moonbit-")
+    strip_prefix = tool_info.get("strip_prefix", "")
     
     # Use repository_ctx methods to download and extract the toolchain
-    try:
-        if checksum:
-            # Verified download with checksum
-            repository_ctx.download_and_extract(
-                url = download_url,
-                sha256 = checksum,
-                strip_prefix = strip_prefix,
-                type = archive_type,
-            )
-        else:
-            # Unverified download (for development/testing only)
-            repository_ctx.download_and_extract(
-                url = download_url,
-                strip_prefix = strip_prefix,
-                type = archive_type,
-            )
-    except:
-        # If download fails, create a fallback toolchain with helpful error message
-        _create_fallback_toolchain(repository_ctx, version, platform, download_url)
-    
-    # Validate that the toolchain was downloaded successfully
+    # Just call download_and_extract directly - Bazel will fail with clear message
+    repository_ctx.download_and_extract(
+        url = download_url,
+        sha256 = checksum if checksum else "",
+        strip_prefix = strip_prefix,
+        type = archive_type,
+    )
+
+    # Make binaries executable (tar extraction may not preserve permissions)
+    bin_path = repository_ctx.path("bin")
+    if bin_path.exists:
+        # Make all binaries in bin/ executable
+        for binary in ["moon", "moonc", "moonfmt", "mooninfo", "moonrun", "moondoc"]:
+            binary_path = bin_path.get_child(binary)
+            if binary_path.exists:
+                repository_ctx.execute(["chmod", "+x", str(binary_path)])
+
+    # Write toolchain info for debugging
     toolchain_info_file = repository_ctx.path("moonbit_toolchain_info.json")
-    repository_ctx.write(
-        output = toolchain_info_file,
-        content = """{{
-  "moonbit_toolchain": {{
-    "version": "{}",
-    "platform": "{}",
-    "download_url": "{}",
-    "checksum_verified": {},
-    "tool_info": {}
-  }}
-}}""".format(version, platform, download_url, bool(checksum), tool_info),
+    repository_ctx.file(
+        toolchain_info_file,
+        content = """{
+  "moonbit_toolchain": {
+    "version": "%s",
+    "platform": "%s",
+    "download_url": "%s",
+    "checksum_verified": %s
+  }
+}""" % (version, platform, download_url, str(bool(checksum)).lower()),
     )
-    
-    # Return the toolchain information
-    return {
-        "moon_executable": "$(location moonbit_toolchain/moon)",
-        "version": version,
-        "platform": platform,
-    }
 
-def _create_fallback_toolchain(repository_ctx, version, platform, download_url):
-    """Create a fallback toolchain when download fails."""
-    # Create a placeholder moon executable
-    moon_executable = repository_ctx.actions.declare_file("moon")
-    repository_ctx.actions.write(
-        output = moon_executable,
-        content = """#!/bin/bash
-# MoonBit Compiler - Fallback/Placeholder
-# This is a fallback executable created because the real MoonBit compiler
-# could not be downloaded from: {}
+    # Generate BUILD.bazel file for the toolchain repository
+    # We need to create a .bzl file with the toolchain implementation that provides ToolchainInfo
+    toolchain_bzl_content = '''"""Generated toolchain implementation for hermetic MoonBit"""
 
-echo "ERROR: MoonBit compiler not available"
-echo "Attempted to download from: {}"
-echo "Version: {}"
-echo "Platform: {}"
-echo ""
-echo "This is a fallback executable. Please ensure:"
-echo "1. You have internet connectivity"
-echo "2. The MoonBit release exists at the specified URL"
-echo "3. The checksums in moonbit.json are correct"
-echo ""
-echo "For development/testing, you can:"
-echo "1. Use a local MoonBit installation"
-echo "2. Create a test toolchain with: bazel run //:test_toolchain.sh"
-echo "3. Update the checksum registry with correct URLs"
-exit 1
-""".format(download_url, download_url, version, platform),
-        is_executable = True
+load("@rules_moonbit//moonbit:providers.bzl", "MoonbitToolchainInfo")
+
+def _moonbit_hermetic_toolchain_impl(ctx):
+    """Toolchain implementation that provides ToolchainInfo."""
+    moon_executable = ctx.file.moon_executable
+
+    toolchain_info = MoonbitToolchainInfo(
+        moon_executable = moon_executable,
+        version = ctx.attr.version,
+        target_platform = ctx.attr.target_platform,
+        all_files = depset([moon_executable] + ctx.files.all_files),
+        supports_wasm = True,
+        supports_native = True,
+        supports_js = True,
+        supports_c = True,
     )
-    
-    # Create an info file explaining the issue
-    info_file = repository_ctx.actions.declare_file("DOWNLOAD_FAILED.txt")
-    repository_ctx.actions.write(
-        output = info_file,
-        content = """MoonBit Toolchain Download Failed
 
-The MoonBit compiler could not be downloaded from:
-{}
+    return [platform_common.ToolchainInfo(moonbit = toolchain_info)]
 
-Version: {}
-Platform: {}
+moonbit_hermetic_toolchain = rule(
+    implementation = _moonbit_hermetic_toolchain_impl,
+    attrs = {{
+        "moon_executable": attr.label(
+            mandatory = True,
+            allow_single_file = True,
+            executable = True,
+            cfg = "exec",
+        ),
+        "all_files": attr.label_list(allow_files = True),
+        "version": attr.string(default = "{version}"),
+        "target_platform": attr.string(default = "{platform}"),
+    }},
+)
+'''
 
-Possible reasons:
-1. The specified version does not exist
-2. The platform is not supported
-3. Network connectivity issues
-4. GitHub rate limiting
-5. Incorrect checksum registry entries
+    repository_ctx.file("toolchain_impl.bzl", content = toolchain_bzl_content.format(
+        version=version,
+        platform=platform
+    ))
 
-To resolve this issue:
+    build_content = '''# Generated BUILD.bazel for MoonBit toolchain
+# Version: {version}
+# Platform: {platform}
 
-1. Check if the version exists in the checksum registry:
-   //moonbit/checksums/moonbit.json
+load(":toolchain_impl.bzl", "moonbit_hermetic_toolchain")
 
-2. Verify the download URL format is correct
+package(default_visibility = ["//visibility:public"])
 
-3. For development, use the test toolchain:
-   - Run: bazel run //:test_toolchain.sh
-   - Update WORKSPACE to use local_repository pointing to moonbit_toolchain/
+# Export the moon binary
+exports_files(["bin/moon", "bin/moonfmt", "bin/mooninfo"])
 
-4. If you believe this is a bug, please report it with:
-   - The exact version and platform you're trying to use
-   - The full error message
-   - Your operating system and architecture
+# Filegroup for all binaries
+filegroup(
+    name = "moon_binaries",
+    srcs = glob(["bin/*"]),
+)
 
-Fallback toolchain created for basic functionality.""".format(download_url, version, platform),
-        is_executable = False
-    )
+# Filegroup for runtime libraries
+filegroup(
+    name = "moon_runtime",
+    srcs = glob(["lib/*"]),
+)
+
+# Filegroup for headers
+filegroup(
+    name = "moon_headers",
+    srcs = glob(["include/*"]),
+)
+
+# Toolchain implementation - provides ToolchainInfo with MoonbitToolchainInfo
+moonbit_hermetic_toolchain(
+    name = "moonbit_toolchain_impl",
+    moon_executable = "bin/moon",
+    all_files = [
+        ":moon_binaries",
+        ":moon_runtime",
+        ":moon_headers",
+    ],
+    version = "{version}",
+    target_platform = "{platform}",
+)
+
+# Toolchain definition - registers with Bazel's toolchain resolution
+toolchain(
+    name = "moonbit_toolchain",
+    toolchain = ":moonbit_toolchain_impl",
+    toolchain_type = "@rules_moonbit//moonbit:moonbit_toolchain_type",
+)
+'''.format(version=version, platform=platform)
+
+    repository_ctx.file("BUILD.bazel", content = build_content)
+
+
 
 def _get_current_platform(repository_ctx):
     """Determine the current platform for toolchain selection
@@ -195,22 +217,14 @@ def _get_current_platform(repository_ctx):
     Returns:
         String: Platform identifier (e.g., 'darwin_arm64', 'linux_amd64')
     """
-    # Use a simple approach - check environment variables
-    # This is the most reliable method for repository rules
+    # Use repository_ctx.os which is the correct API
+    os_name = repository_ctx.os.name.lower()
+    arch = repository_ctx.os.arch
     
-    # Check for macOS
-    if repository_ctx.getenv("MACOSX_DEPLOYMENT_TARGET") or repository_ctx.getenv("__APPLE__"):
-        # Check architecture - default to arm64 for modern macOS
-        if repository_ctx.getenv("ARCH") == "arm64" or repository_ctx.getenv("PROCESSOR_ARCHITECTURE") == "arm64":
-            return "darwin_arm64"
-        else:
-            return "darwin_amd64"
-    
-    # Check for Windows
-    elif repository_ctx.getenv("OS") == "Windows_NT":
+    if "mac" in os_name or "darwin" in os_name:
+        return "darwin_arm64" if arch == "aarch64" else "darwin_amd64"
+    elif "windows" in os_name:
         return "windows_amd64"
-    
-    # Default to Linux (most common case for CI/CD)
     else:
         return "linux_amd64"
 
@@ -235,26 +249,11 @@ def moonbit_register_hermetic_toolchain(
         )
     """
     
-    # Define the repository rule
-    moonbit_toolchain_repository = repository_rule(
+    # Just call the repository rule directly - this is the correct approach
+    moonbit_toolchain_repository(
         name = name,
-        implementation = _moonbit_toolchain_impl,
-        attrs = {
-            "version": attr.string(
-                doc = "MoonBit version to use",
-                default = version or "latest",
-            ),
-            "platforms": attr.string_list(
-                doc = "Platforms to support",
-                default = platforms or [],
-            ),
-        },
-        local = False,
+        version = version or "latest",
     )
-    
-    # Also register the toolchain for Bazel toolchain resolution
-    # This connects the repository to the toolchain_type
-    # Note: Toolchain registration is handled automatically by Bazel's toolchain resolution
 
 # Define the repository rule for external use
 moonbit_toolchain_repository = repository_rule(
