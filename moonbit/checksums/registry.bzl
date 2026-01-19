@@ -65,16 +65,18 @@ def get_moonbit_checksum(repository_ctx, version, platform):
     
     # Skip placeholder checksums and warn user
     if status == "placeholder":
-        repository_ctx.warning(
-            ("Placeholder checksum for MoonBit {} on {} - checksum verification skipped. " +
-             "Please update moonbit.json with the actual checksum from official releases.").format(version, platform)
+        # buildifier: disable=print
+        print(
+            "WARNING: Placeholder checksum for MoonBit {} on {} - checksum verification skipped. ".format(version, platform) +
+            "Please update moonbit.json with the actual checksum from official releases."
         )
         return None
-    
+
     # Skip TODO checksums
     if checksum == "TODO":
-        repository_ctx.warning(
-            "Checksum not available for MoonBit {} on {} - download verification disabled.".format(version, platform)
+        # buildifier: disable=print
+        print(
+            "WARNING: Checksum not available for MoonBit {} on {} - download verification disabled.".format(version, platform)
         )
         return None
     
