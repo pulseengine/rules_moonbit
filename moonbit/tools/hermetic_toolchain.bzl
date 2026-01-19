@@ -27,6 +27,93 @@ load("//moonbit/checksums:registry_v2.bzl",
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 
+def _create_unsupported_platform_stub(repository_ctx, version, platform):
+    """Create a stub toolchain for unsupported platforms.
+
+    This allows Bazel analysis to succeed on platforms where MoonBit
+    is not available. Builds that actually need MoonBit will fail with
+    a clear error message at build time rather than analysis time.
+    """
+    # Create a stub moon script that fails with a helpful message
+    stub_script = """#!/bin/bash
+echo "ERROR: MoonBit is not available for platform: {platform}" >&2
+echo "MoonBit only supports: darwin_arm64, linux_amd64, windows_amd64" >&2
+exit 1
+""".format(platform = platform)
+
+    repository_ctx.file("bin/moon", content = stub_script, executable = True)
+
+    # Create BUILD.bazel with stub toolchain
+    build_content = '''# Auto-generated stub for unsupported platform: {platform}
+# MoonBit only provides binaries for darwin_arm64, linux_amd64, windows_amd64
+
+load(":toolchain_impl.bzl", "moonbit_hermetic_toolchain")
+
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "all_files",
+    srcs = glob(["bin/*"]),
+)
+
+moonbit_hermetic_toolchain(
+    name = "moonbit_toolchain_impl",
+    moon_executable = "bin/moon",
+    all_files = [":all_files"],
+    version = "{version}",
+    target_platform = "{platform}",
+)
+
+toolchain(
+    name = "moonbit_toolchain",
+    exec_compatible_with = [],
+    target_compatible_with = [],
+    toolchain = ":moonbit_toolchain_impl",
+    toolchain_type = "@rules_moonbit//moonbit:moonbit_toolchain_type",
+)
+'''.format(version = version, platform = platform)
+
+    repository_ctx.file("BUILD.bazel", content = build_content)
+
+    # Create minimal toolchain_impl.bzl
+    toolchain_bzl_content = '''"""Stub toolchain for unsupported platform"""
+
+load("@rules_moonbit//moonbit:providers.bzl", "MoonbitToolchainInfo")
+
+def _moonbit_hermetic_toolchain_impl(ctx):
+    """Stub toolchain that indicates platform is not supported."""
+    moon_executable = ctx.file.moon_executable
+
+    toolchain_info = MoonbitToolchainInfo(
+        moon_executable = moon_executable,
+        version = ctx.attr.version,
+        target_platform = ctx.attr.target_platform,
+        all_files = depset([moon_executable] + ctx.files.all_files),
+        supports_wasm = False,  # Not supported on this platform
+        supports_native = False,
+        supports_js = False,
+        supports_c = False,
+    )
+
+    return [platform_common.ToolchainInfo(moonbit = toolchain_info)]
+
+moonbit_hermetic_toolchain = rule(
+    implementation = _moonbit_hermetic_toolchain_impl,
+    attrs = {
+        "moon_executable": attr.label(
+            mandatory = True,
+            allow_single_file = True,
+            executable = True,
+            cfg = "exec",
+        ),
+        "all_files": attr.label_list(allow_files = True),
+        "version": attr.string(),
+        "target_platform": attr.string(),
+    },
+)
+'''
+    repository_ctx.file("toolchain_impl.bzl", content = toolchain_bzl_content)
+
 def _moonbit_toolchain_impl(repository_ctx):
     """Download and set up MoonBit toolchain using http_archive
     
@@ -51,7 +138,10 @@ def _moonbit_toolchain_impl(repository_ctx):
     # Get tool info for this platform
     tool_info = get_moonbit_info_v2(repository_ctx, version, platform)
     if not tool_info:
-        fail("MoonBit not available for platform: {}".format(platform))
+        # Platform not supported - create stub toolchain that gracefully fails at build time
+        # This prevents Bazel from failing during analysis on unsupported platforms
+        _create_unsupported_platform_stub(repository_ctx, version, platform)
+        return
     
     # Get checksum for verification
     checksum = get_moonbit_checksum_v2(repository_ctx, version, platform)
