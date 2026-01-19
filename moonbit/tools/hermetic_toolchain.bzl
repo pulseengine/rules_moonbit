@@ -71,9 +71,19 @@ def _moonbit_toolchain_impl(repository_ctx):
         # For specific versions, try versioned URL (may not exist)
         download_url = "https://cli.moonbitlang.com/binaries/{}/{}".format(version, url_suffix)
     
-    # Determine archive type and strip prefix
+    # Determine archive type from URL suffix or explicit field
+    # MoonBit uses .zip on Windows and .tar.gz on Unix
+    archive_type = tool_info.get("archive_type")
+    if not archive_type:
+        # Infer from URL suffix
+        if url_suffix.endswith(".zip"):
+            archive_type = "zip"
+        elif url_suffix.endswith(".tar.gz"):
+            archive_type = "tar.gz"
+        else:
+            archive_type = "tar.gz"  # Default fallback
+
     # MoonBit archives have no strip prefix - files are at ./bin/, ./lib/, ./include/
-    archive_type = tool_info.get("archive_type", "tar.gz")
     strip_prefix = tool_info.get("strip_prefix", "")
     
     # Use repository_ctx methods to download and extract the toolchain
@@ -86,13 +96,15 @@ def _moonbit_toolchain_impl(repository_ctx):
     )
 
     # Make binaries executable (tar extraction may not preserve permissions)
-    bin_path = repository_ctx.path("bin")
-    if bin_path.exists:
-        # Make all binaries in bin/ executable
-        for binary in ["moon", "moonc", "moonfmt", "mooninfo", "moonrun", "moondoc"]:
-            binary_path = bin_path.get_child(binary)
-            if binary_path.exists:
-                repository_ctx.execute(["chmod", "+x", str(binary_path)])
+    # Skip on Windows where chmod doesn't apply
+    if not platform.startswith("windows"):
+        bin_path = repository_ctx.path("bin")
+        if bin_path.exists:
+            # Make all binaries in bin/ executable
+            for binary in ["moon", "moonc", "moonfmt", "mooninfo", "moonrun", "moondoc"]:
+                binary_path = bin_path.get_child(binary)
+                if binary_path.exists:
+                    repository_ctx.execute(["chmod", "+x", str(binary_path)])
 
     # Write toolchain info for debugging
     toolchain_info_file = repository_ctx.path("moonbit_toolchain_info.json")
