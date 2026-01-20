@@ -166,6 +166,10 @@ moonbit_binary = rule(
             allow_files = False,
             mandatory = False,
         ),
+        "is_main": attr.bool(
+            doc = "Whether this is a main package (has fn main). Always true for binaries.",
+            default = True,
+        ),
         "target_platform": attr.string(
             doc = "Target platform for cross-compilation (e.g., 'linux_x86_64', 'windows_amd64')",
             default = "",
