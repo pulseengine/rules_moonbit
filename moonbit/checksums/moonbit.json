@@ -3,39 +3,17 @@
     "latest": {
       "platforms": {
         "darwin_arm64": {
-          "sha256": "89d87662194a4a2d7cc345b1fecf8bbe42e0a00ee7e68c8f2e407f3f3da4b51f",
+          "sha256": "a3f029a33be93fef5246605ed6db0bbce651b2697940010acc5f4697e39d2010",
           "url_suffix": "moonbit-darwin-aarch64.tar.gz",
           "binaries": ["moon"]
         },
         "linux_amd64": {
-          "sha256": "401d0c5408819a0ed6197d2db54c10e17fe16c6e5654df1bf8b2de71a9bbc1e5",
+          "sha256": "0d9df3c561ce0a145ff3d457b0bedee6134c214c1533ed316ee548c958d67046",
           "url_suffix": "moonbit-linux-x86_64.tar.gz",
           "binaries": ["moon"]
         },
         "windows_x86_64": {
-          "sha256": "3341a87d6d17c9a4a913eb65329271ccc3e769e6668f41a48de84fcbdcdca5dc",
-          "url_suffix": "moonbit-windows-x86_64.zip",
-          "binaries": ["moon.exe"],
-          "status": "verified"
-        }
-      }
-    },
-    "0.6.33": {
-      "platforms": {
-        "darwin_arm64": {
-          "sha256": "89d87662194a4a2d7cc345b1fecf8bbe42e0a00ee7e68c8f2e407f3f3da4b51f",
-          "url_suffix": "moonbit-darwin-aarch64.tar.gz",
-          "binaries": ["moon"],
-          "status": "legacy"
-        },
-        "linux_amd64": {
-          "sha256": "401d0c5408819a0ed6197d2db54c10e17fe16c6e5654df1bf8b2de71a9bbc1e5",
-          "url_suffix": "moonbit-linux-x86_64.tar.gz",
-          "binaries": ["moon"],
-          "status": "legacy"
-        },
-        "windows_amd64": {
-          "sha256": "3341a87d6d17c9a4a913eb65329271ccc3e769e6668f41a48de84fcbdcdca5dc",
+          "sha256": "96dc88ef0bc897d9785d598cbafde2d70eac7e2a5e45e8361ea1d429644f79bf",
           "url_suffix": "moonbit-windows-x86_64.zip",
           "binaries": ["moon.exe"],
           "status": "verified"
@@ -45,7 +23,7 @@
   },
   "cores": {
     "latest": {
-      "sha256": "bf12dce0a92d84911e0d30cb74ac73f80d03a89f0933a4bda87e2f6647a00887",
+      "sha256": "d07b3819cec1fdd3a4b0bb18df8aa1b60e6dc2337456ab2d55ae2557210ec439",
       "url_suffix": "core-latest.tar.gz"
     }
   }
