@@ -127,8 +127,8 @@ def _moonbit_toolchain_impl(repository_ctx):
         Dict: Toolchain information including moon executable path
     """
     
-    # Get version from attributes or use a default
-    version = repository_ctx.attr.version if repository_ctx.attr.version else "0.6.33"
+    # Get version from attributes or use "latest"
+    version = repository_ctx.attr.version if repository_ctx.attr.version else "latest"
     if not version:
         fail("No MoonBit version specified")
     
