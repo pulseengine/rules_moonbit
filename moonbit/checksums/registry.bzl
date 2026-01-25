@@ -121,8 +121,23 @@ def get_latest_moonbit_version(repository_ctx):
 
 def get_github_repo():
     """Get MoonBit GitHub repository
-    
+
     Returns:
         String: GitHub repository path
     """
     return "moonbitlang/moon"
+
+def get_moonbit_core_info(repository_ctx, version):
+    """Get MoonBit core library information from centralized registry
+
+    Args:
+        repository_ctx: Repository context for file operations
+        version: MoonBit version string (e.g., 'latest')
+
+    Returns:
+        Dict: Core library information with sha256 and url_suffix, or None if not found
+    """
+    moonbit_data = _load_moonbit_checksums_from_json(repository_ctx)
+
+    cores = moonbit_data.get("cores", {})
+    return cores.get(version)

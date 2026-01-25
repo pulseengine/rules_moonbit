@@ -18,11 +18,12 @@ for proper Bazel 8.5+ compatibility and hermetic toolchain downloads.
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("//moonbit/checksums:registry_v2.bzl", 
-     "get_moonbit_checksum_v2", 
-     "get_moonbit_info_v2", 
+load("//moonbit/checksums:registry_v2.bzl",
+     "get_moonbit_checksum_v2",
+     "get_moonbit_info_v2",
      "get_latest_moonbit_version_v2",
-     "get_github_repo_v2")
+     "get_github_repo_v2",
+     "get_moonbit_core_info")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
@@ -184,6 +185,24 @@ def _moonbit_toolchain_impl(repository_ctx):
         strip_prefix = strip_prefix,
         type = archive_type,
     )
+
+    # Download and set up the core library (moonbitlang/core)
+    # The moon build command needs this to resolve standard library imports
+    core_info = get_moonbit_core_info(repository_ctx, "latest")
+    if core_info:
+        core_url_suffix = core_info.get("url_suffix", "core-latest.tar.gz")
+        core_checksum = core_info.get("sha256", "")
+        core_download_url = "https://cli.moonbitlang.com/cores/{}".format(core_url_suffix)
+
+        # Download core library into .moon/lib/core/
+        # This is where moon looks for the standard library
+        core_dir = repository_ctx.path(".moon/lib/core")
+        repository_ctx.download_and_extract(
+            url = core_download_url,
+            sha256 = core_checksum if core_checksum else "",
+            output = str(core_dir),
+            type = "tar.gz",
+        )
 
     # Make binaries executable (tar extraction may not preserve permissions)
     # Skip on Windows where chmod doesn't apply

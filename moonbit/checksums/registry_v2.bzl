@@ -19,7 +19,7 @@ with support for both legacy and new JSON formats.
 # limitations under the License.
 
 # Load legacy registry for backward compatibility
-load(":registry.bzl", "get_moonbit_checksum", "get_moonbit_info", "get_latest_moonbit_version", "get_github_repo")
+load(":registry.bzl", "get_moonbit_checksum", "get_moonbit_info", "get_latest_moonbit_version", "get_github_repo", "get_moonbit_core_info")
 
 # For now, we use the legacy format exclusively
 USE_NEW_CHECKSUM_UPDATER = False
