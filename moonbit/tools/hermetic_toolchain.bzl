@@ -220,6 +220,23 @@ def _moonbit_toolchain_impl(repository_ctx):
             if result.return_code != 0:
                 # buildifier: disable=print
                 print("Warning: Failed to bundle core library: {}".format(result.stderr))
+            else:
+                # Create symlinks from old path structure to new bundle location
+                # moon bundle outputs to _build/wasm-gc/release/bundle/
+                # but older moon build commands expect target/wasm/release/bundle/
+                bundle_dir = repository_ctx.path(".moon/lib/core/_build/wasm-gc/release/bundle")
+                if bundle_dir.exists:
+                    # Create target/wasm/release/ directory structure
+                    target_dir = repository_ctx.path(".moon/lib/core/target/wasm/release")
+                    repository_ctx.execute(["mkdir", "-p", str(target_dir)])
+
+                    # Create symlink: target/wasm/release/bundle -> ../../_build/wasm-gc/release/bundle
+                    bundle_link = target_dir.get_child("bundle")
+                    repository_ctx.execute([
+                        "ln", "-sf",
+                        "../../../_build/wasm-gc/release/bundle",
+                        str(bundle_link)
+                    ])
 
     # Make binaries executable (tar extraction may not preserve permissions)
     # Skip on Windows where chmod doesn't apply
