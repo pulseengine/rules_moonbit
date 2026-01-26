@@ -186,6 +186,18 @@ def _moonbit_toolchain_impl(repository_ctx):
         type = archive_type,
     )
 
+    # Make binaries executable FIRST (tar extraction may not preserve permissions)
+    # This must happen before running moon bundle
+    # Skip on Windows where chmod doesn't apply
+    if not platform.startswith("windows"):
+        bin_path = repository_ctx.path("bin")
+        if bin_path.exists:
+            # Make all binaries in bin/ executable
+            for binary in ["moon", "moonc", "moonfmt", "mooninfo", "moonrun", "moondoc"]:
+                binary_path = bin_path.get_child(binary)
+                if binary_path.exists:
+                    repository_ctx.execute(["chmod", "+x", str(binary_path)])
+
     # Download and set up the core library (moonbitlang/core)
     # The moon build command needs this to resolve standard library imports
     core_info = get_moonbit_core_info(repository_ctx, "latest")
@@ -237,17 +249,6 @@ def _moonbit_toolchain_impl(repository_ctx):
                         "../../../_build/wasm-gc/release/bundle",
                         str(bundle_link)
                     ])
-
-    # Make binaries executable (tar extraction may not preserve permissions)
-    # Skip on Windows where chmod doesn't apply
-    if not platform.startswith("windows"):
-        bin_path = repository_ctx.path("bin")
-        if bin_path.exists:
-            # Make all binaries in bin/ executable
-            for binary in ["moon", "moonc", "moonfmt", "mooninfo", "moonrun", "moondoc"]:
-                binary_path = bin_path.get_child(binary)
-                if binary_path.exists:
-                    repository_ctx.execute(["chmod", "+x", str(binary_path)])
 
     # Write toolchain info for debugging
     toolchain_info_file = repository_ctx.path("moonbit_toolchain_info.json")
