@@ -22,8 +22,8 @@ load("//moonbit/checksums:registry_v2.bzl",
      "get_moonbit_checksum_v2",
      "get_moonbit_info_v2",
      "get_latest_moonbit_version_v2",
-     "get_github_repo_v2",
-     "get_moonbit_core_info")
+     "get_github_repo_v2")
+load("//moonbit/checksums:registry.bzl", "get_moonbit_core_info")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")

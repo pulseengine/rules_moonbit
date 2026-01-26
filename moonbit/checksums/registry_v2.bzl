@@ -109,16 +109,28 @@ def list_supported_platforms(repository_ctx):
 
 def validate_tool_exists(repository_ctx, version, platform):
     """Validate that a tool version and platform combination exists
-    
+
     Args:
         repository_ctx: Repository context for file operations
         version: MoonBit version string
         platform: Platform string
-        
+
     Returns:
         Bool: True if the combination exists and has a checksum
     """
     checksum = get_moonbit_checksum_v2(repository_ctx, version, platform)
     return checksum != None and len(checksum) == 64  # Valid SHA256 length
+
+def get_moonbit_core_info_v2(repository_ctx, version):
+    """Get MoonBit core library information from enhanced registry
+
+    Args:
+        repository_ctx: Repository context for file operations
+        version: MoonBit version string (e.g., 'latest')
+
+    Returns:
+        Dict: Core library information with sha256 and url_suffix, or None if not found
+    """
+    return get_moonbit_core_info(repository_ctx, version)
 
 # Note: Backward compatibility is handled by the legacy registry.bzl file
