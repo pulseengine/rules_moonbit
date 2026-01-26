@@ -204,6 +204,23 @@ def _moonbit_toolchain_impl(repository_ctx):
             type = "tar.gz",
         )
 
+        # Build the core library bundle
+        # MoonBit requires pre-compiled .mi files in target/{target}/release/bundle/
+        # Run `moon bundle` to generate these from source
+        moon_binary = repository_ctx.path("bin/moon")
+        core_source_dir = repository_ctx.path(".moon/lib/core")
+        if moon_binary.exists and core_source_dir.exists:
+            # Set MOON_HOME to our toolchain directory so moon knows where to put output
+            moon_home = str(repository_ctx.path(".moon"))
+            result = repository_ctx.execute(
+                [str(moon_binary), "bundle", "--source-dir", str(core_source_dir)],
+                environment = {"MOON_HOME": moon_home},
+                timeout = 300,  # 5 minutes for bundle generation
+            )
+            if result.return_code != 0:
+                # buildifier: disable=print
+                print("Warning: Failed to bundle core library: {}".format(result.stderr))
+
     # Make binaries executable (tar extraction may not preserve permissions)
     # Skip on Windows where chmod doesn't apply
     if not platform.startswith("windows"):
