@@ -194,13 +194,13 @@ def _moonbit_toolchain_impl(repository_ctx):
         core_checksum = core_info.get("sha256", "")
         core_download_url = "https://cli.moonbitlang.com/cores/{}".format(core_url_suffix)
 
-        # Download core library into .moon/lib/core/
-        # This is where moon looks for the standard library
-        core_dir = repository_ctx.path(".moon/lib/core")
+        # Download core library into .moon/lib/
+        # The archive has a 'core/' prefix, so it will extract to .moon/lib/core/
+        core_parent_dir = repository_ctx.path(".moon/lib")
         repository_ctx.download_and_extract(
             url = core_download_url,
             sha256 = core_checksum if core_checksum else "",
-            output = str(core_dir),
+            output = str(core_parent_dir),
             type = "tar.gz",
         )
 
