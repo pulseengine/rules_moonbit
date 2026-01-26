@@ -302,6 +302,13 @@ filegroup(
     srcs = glob(["include/*"]),
 )
 
+# Filegroup for core library (moonbitlang/core)
+# This is needed by moon build to resolve standard library imports
+filegroup(
+    name = "moon_core",
+    srcs = glob([".moon/lib/core/**"]),
+)
+
 # Toolchain implementation - provides ToolchainInfo with MoonbitToolchainInfo
 moonbit_hermetic_toolchain(
     name = "moonbit_toolchain_impl",
@@ -310,6 +317,7 @@ moonbit_hermetic_toolchain(
         ":moon_binaries",
         ":moon_runtime",
         ":moon_headers",
+        ":moon_core",
     ],
     version = "{version}",
     target_platform = "{platform}",
