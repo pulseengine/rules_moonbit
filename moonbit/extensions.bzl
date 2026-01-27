@@ -39,9 +39,10 @@ def _moonbit_toolchain_extension_impl(module_ctx):
         version = "",  # Uses default 0.6.33 from hermetic_toolchain.bzl
     )
     
+    # Support both dev and non-dev usage by listing repos in both fields
     return module_ctx.extension_metadata(
-        root_module_direct_deps = "all",
-        root_module_direct_dev_deps = "all",
+        root_module_direct_deps = ["moonbit_toolchain"],
+        root_module_direct_dev_deps = ["moonbit_toolchain"],
     )
 
 # Export the extension
