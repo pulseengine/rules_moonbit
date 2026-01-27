@@ -40,8 +40,8 @@ def _moonbit_toolchain_extension_impl(module_ctx):
     )
     
     return module_ctx.extension_metadata(
-        root_module_direct_deps = ["moonbit_toolchain"],
-        root_module_direct_dev_deps = [],
+        root_module_direct_deps = "all",
+        root_module_direct_dev_deps = "all",
     )
 
 # Export the extension
