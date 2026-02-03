@@ -23,7 +23,7 @@
   },
   "cores": {
     "latest": {
-      "sha256": "d07b3819cec1fdd3a4b0bb18df8aa1b60e6dc2337456ab2d55ae2557210ec439",
+      "sha256": "6c77dc4a6451963b7a6d1287eaeb8c7e8c0d62a148439404ead3e0ea08b3d712",
       "url_suffix": "core-latest.tar.gz"
     }
   }
