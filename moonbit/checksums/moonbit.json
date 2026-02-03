@@ -8,7 +8,7 @@
           "binaries": ["moon"]
         },
         "linux_amd64": {
-          "sha256": "0d9df3c561ce0a145ff3d457b0bedee6134c214c1533ed316ee548c958d67046",
+          "sha256": "9dda4cc4bd2709bf12f621a9e1cbcf99f8cf01f344a5fcb5cd47ed7438f0176a",
           "url_suffix": "moonbit-linux-x86_64.tar.gz",
           "binaries": ["moon"]
         },
