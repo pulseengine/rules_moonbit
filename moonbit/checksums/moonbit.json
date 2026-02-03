@@ -3,7 +3,7 @@
     "latest": {
       "platforms": {
         "darwin_arm64": {
-          "sha256": "a3f029a33be93fef5246605ed6db0bbce651b2697940010acc5f4697e39d2010",
+          "sha256": "77801edc51b20e7634552572cfa991e22d3f099dc5e9da9688c6ea35ac4f2421",
           "url_suffix": "moonbit-darwin-aarch64.tar.gz",
           "binaries": ["moon"]
         },
