@@ -3,17 +3,17 @@
     "latest": {
       "platforms": {
         "darwin_arm64": {
-          "sha256": "77801edc51b20e7634552572cfa991e22d3f099dc5e9da9688c6ea35ac4f2421",
+          "sha256": "b6c60b588ed6e5084077c0d5408a1aa1af88ef87310c557c7586c79ebc53f813",
           "url_suffix": "moonbit-darwin-aarch64.tar.gz",
           "binaries": ["moon"]
         },
         "linux_amd64": {
-          "sha256": "9dda4cc4bd2709bf12f621a9e1cbcf99f8cf01f344a5fcb5cd47ed7438f0176a",
+          "sha256": "ad5a003f1acfd0c927b58c3f351f7e74fd78d9d812066a343fc41dbf33de0a06",
           "url_suffix": "moonbit-linux-x86_64.tar.gz",
           "binaries": ["moon"]
         },
         "windows_x86_64": {
-          "sha256": "96dc88ef0bc897d9785d598cbafde2d70eac7e2a5e45e8361ea1d429644f79bf",
+          "sha256": "eed40c85a3a3d469ef16417410babe46965f4a7f8b7f6146ac9d4a52908a88ce",
           "url_suffix": "moonbit-windows-x86_64.zip",
           "binaries": ["moon.exe"],
           "status": "verified"
@@ -23,7 +23,7 @@
   },
   "cores": {
     "latest": {
-      "sha256": "6c77dc4a6451963b7a6d1287eaeb8c7e8c0d62a148439404ead3e0ea08b3d712",
+      "sha256": "9299eed460a9487c0241ca0e53423e0870039022d2caf90a65d31f0831665c0f",
       "url_suffix": "core-latest.tar.gz"
     }
   }
